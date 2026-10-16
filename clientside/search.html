@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zhengzhou Charity | Search Events</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="nav-placeholder"></div>
+
+  <main class="container">
+    <h1 class="section-title">Search Charity Events</h1>
+    <p class="section-sub">Filter by date, location or category. All fields are optional.</p>
+
+    <form id="search-form" class="filter-form" novalidate>
+      <div class="form-group">
+        <label for="filter-date">Date</label>
+        <input type="date" id="filter-date" name="date" />
+      </div>
+      <div class="form-group">
+        <label for="filter-location">Location</label>
+        <input type="text" id="filter-location" name="location" placeholder="e.g. Jinshui District" autocomplete="off" />
+      </div>
+      <div class="form-group">
+        <label for="filter-category">Category</label>
+        <select id="filter-category" name="category">
+          <option value="">All Categories</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Search</button>
+        <button type="button" id="clear-btn" class="btn btn-ghost">Clear Filters</button>
+      </div>
+    </form>
+
+    <div id="alert-container" style="margin-top:18px;"></div>
+
+    <section style="margin-top:30px;">
+      <h2 class="section-title" style="font-size:1.3rem;">Search Results</h2>
+      <p class="section-sub" id="result-count"></p>
+      <div id="results-container" class="card-grid"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 Zhengzhou Charity — PROG2002 Assignment 2 Demo</p>
+  </footer>
+
+  <script src="js/common.js"></script>
+  <script src="js/search.js"></script>
+</body>
+</html>
