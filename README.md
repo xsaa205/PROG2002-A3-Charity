@@ -58,7 +58,6 @@ charityevents-a3/
 │   ├── event.html                # Event detail page
 │   ├── css/style.css
 │   └── js/                       # common.js, index.js, search.js, event.js
-├── adminside/                    # Reserved for the admin-side website
 ├── database/
 │   └── charityevents_a3.sql      # Complete schema + data (single SQL file)
 └── docs/
@@ -642,9 +641,10 @@ Serve `clientside/` with any static server and open `index.html`.
 
 PROG2002 Assessment 3 — Group project (2 students).
 
-| Student | Student ID | Contribution |
-| ------- | ---------- | ------------ |
-| _TBD_   | _TBD_      | _TBD_        |
+| Student | Student ID | GitHub | Responsible for |
+| ------- | ---------- | ------ | --------------- |
+| Yitong Wu (吴益同)   | 24832863 | `xsaa205` | Database and RESTful API (Parts 1–2), admin-side website (Part 4), deployment, video and final packaging |
+| Jiacheng Yang (杨佳程) | 24832986 | `Yjc891`  | Client-side website and the registration flow (Part 3), Open-Meteo weather integration, AngularJS version of the client site |
 
 ---
 
