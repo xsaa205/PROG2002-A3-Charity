@@ -3,38 +3,157 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zhengzhou Charity | Home</title>
+  <title>Zhengzhou Charity | Small acts, warm city</title>
+  <meta name="description" content="Zhengzhou Charity connects volunteers and donors with local causes. Browse upcoming charity events, read the guest list in real time and register for the ones you love." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%2314382D'/%3E%3Cpath d='M12 19s-6-3.7-6-8a3.8 3.8 0 0 1 6-2.7A3.8 3.8 0 0 1 18 11c0 4.3-6 8-6 8Z' fill='%23FAF7F0'/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <div id="nav-placeholder"></div>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header id="site-header"></header>
 
-  <section class="hero">
-    <h1>Gather love in Green City, build a warm Zhengzhou together.</h1>
-    <p>Zhengzhou Charity connects every act of kindness with meaningful causes. Discover upcoming charity events, join a cause you love, and help create lasting change in our community.</p>
-    <a class="btn btn-primary" href="search.html">Find an event</a>
-  </section>
+  <main id="main">
+    <!-- Hero ------------------------------------------------------------- -->
+    <section class="hero on-dark" aria-labelledby="hero-title">
+      <div class="container">
+        <div class="hero-inner">
+          <div>
+            <span class="eyebrow">Green City · Warm Hearts</span>
+            <h1 id="hero-title">Small acts,<br /><em>a warmer</em> Zhengzhou.</h1>
+            <p class="hero-lead">
+              Charity should feel close to home. We gather the city's food drives, reading
+              corners and winter appeals in one place — so you can find a cause, reserve a
+              seat, and see who is showing up beside you.
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-light" href="search.html">
+                Find an event
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+              </a>
+              <a class="btn btn-outline-light" href="#how-it-works">How it works</a>
+            </div>
+          </div>
 
-  <main class="container">
-    <section>
-      <h2 class="section-title">Upcoming & Current Events</h2>
-      <p class="section-sub">Browse our latest charity events and register your interest.</p>
-      <div id="alert-container"></div>
-      <div id="events-container" class="card-grid">
-        <div class="loading">Loading events…</div>
+          <figure class="hero-figure">
+            <div class="frame">
+              <img
+                src="https://picsum.photos/id/823/900/1120"
+                alt="A young volunteer out in the city, camera in hand"
+                width="900" height="1120"
+                onerror="this.style.display='none'"
+              />
+            </div>
+            <figcaption class="hero-note" id="next-event-note">
+              <span class="note-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+              </span>
+              <span>
+                <strong>Loading the next event…</strong>
+                <span>Every seat you reserve becomes a real donation.</span>
+              </span>
+            </figcaption>
+          </figure>
+        </div>
+
+        <div class="stats-strip" aria-label="Community impact">
+          <div class="stat">
+            <div class="stat-value" id="stat-upcoming">—</div>
+            <div class="stat-label">Upcoming events</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="stat-tickets">—</div>
+            <div class="stat-label">Tickets registered</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="stat-raised">—</div>
+            <div class="stat-label">Raised for local causes</div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section id="contact" style="margin-top:48px;">
-      <h2 class="section-title">Contact Us</h2>
-      <p class="section-sub">📧 hello@zzcharity.org &nbsp; | &nbsp; ☎ +86 371 5555 0101 &nbsp; | &nbsp; 📍 No.100 Jianshe Road, Zhongyuan District, Zhengzhou</p>
+    <!-- Upcoming --------------------------------------------------------- -->
+    <section class="container" aria-labelledby="upcoming-title">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">What is on</span>
+          <h2 class="section-title" id="upcoming-title">Upcoming &amp; current events</h2>
+          <p class="section-sub">
+            Reserve a place in a few clicks. The guest list on every event page is pulled
+            live from the database, newest registration first.
+          </p>
+        </div>
+        <a class="btn btn-ghost" href="search.html">See all events</a>
+      </div>
+
+      <div id="alert-container"></div>
+      <div id="events-container" class="card-grid" aria-live="polite">
+        <div class="skeleton-card"><div class="skeleton s-media"></div><div class="skeleton s-line short"></div><div class="skeleton s-line"></div></div>
+        <div class="skeleton-card"><div class="skeleton s-media"></div><div class="skeleton s-line short"></div><div class="skeleton s-line"></div></div>
+        <div class="skeleton-card"><div class="skeleton s-media"></div><div class="skeleton s-line short"></div><div class="skeleton s-line"></div></div>
+      </div>
+    </section>
+
+    <!-- Past events ------------------------------------------------------ -->
+    <section class="container" id="past-section" style="margin-top: var(--section-y); display: none;" aria-labelledby="past-title">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Already held</span>
+          <h2 class="section-title" id="past-title">Look back at what we did</h2>
+          <p class="section-sub">Past events remain online so you can see the turn-out and the money raised.</p>
+        </div>
+      </div>
+      <div id="past-container" class="card-grid"></div>
+    </section>
+
+    <!-- How it works ----------------------------------------------------- -->
+    <section class="container" id="how-it-works">
+      <div class="band">
+        <span class="eyebrow">Three steps</span>
+        <h2 class="section-title">From a free afternoon to real help</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="step-index">01</div>
+            <h3>Find a cause</h3>
+            <p>Filter by date, district or category. Every listing shows the organiser, the address and the seats already taken.</p>
+          </div>
+          <div class="step">
+            <div class="step-index">02</div>
+            <h3>Reserve tickets</h3>
+            <p>Choose how many tickets you need. Your name appears on the event's guest list straight away, sorted by the newest registration.</p>
+          </div>
+          <div class="step">
+            <div class="step-index">03</div>
+            <h3>Show up</h3>
+            <p>Bring your confirmation reference. Free events need no payment; paid tickets are settled with the organiser on the day.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact ---------------------------------------------------------- -->
+    <section class="container" id="contact" style="margin-top: var(--section-y);">
+      <div class="band">
+        <div class="section-head" style="margin-bottom: 0;">
+          <div>
+            <span class="eyebrow">Talk to us</span>
+            <h2 class="section-title">Running a cause of your own?</h2>
+            <p class="section-sub">
+              Tell us about it and our team will list it on the site, free of charge, within two working days.
+            </p>
+          </div>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <a class="btn btn-primary" href="mailto:hello@zzcharity.org">Email the team</a>
+            <a class="btn btn-ghost" href="tel:+8637155550101">+86 371 5555 0101</a>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 
-  <footer>
-    <p>© 2026 Zhengzhou Charity — PROG2002 Assignment 2 Demo</p>
-  </footer>
+  <footer id="site-footer"></footer>
 
+  <script src="js/config.js"></script>
   <script src="js/common.js"></script>
   <script src="js/index.js"></script>
 </body>

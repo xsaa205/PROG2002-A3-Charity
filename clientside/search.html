@@ -3,50 +3,72 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zhengzhou Charity | Search Events</title>
+  <title>Zhengzhou Charity | Find an event</title>
+  <meta name="description" content="Search charity events in Zhengzhou by date, district or category. Every listing is read live from the charity events API." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%2314382D'/%3E%3Cpath d='M12 19s-6-3.7-6-8a3.8 3.8 0 0 1 6-2.7A3.8 3.8 0 0 1 18 11c0 4.3-6 8-6 8Z' fill='%23FAF7F0'/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <div id="nav-placeholder"></div>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header id="site-header"></header>
 
-  <main class="container">
-    <h1 class="section-title">Search Charity Events</h1>
-    <p class="section-sub">Filter by date, location or category. All fields are optional.</p>
+  <main id="main" class="container">
+    <div class="page-head">
+      <span class="eyebrow">Event directory</span>
+      <h1>Find the cause that fits your week.</h1>
+      <p>
+        Filter by date, district or category — every field is optional. Results come straight
+        from the charity events database, so the seats you see are the seats that are taken.
+      </p>
+    </div>
 
-    <form id="search-form" class="filter-form" novalidate>
-      <div class="form-group">
-        <label for="filter-date">Date</label>
-        <input type="date" id="filter-date" name="date" />
+    <!-- Filters ----------------------------------------------------------- -->
+    <form id="search-form" class="filter-panel" novalidate>
+      <div class="filter-grid">
+        <div class="field">
+          <label for="filter-date">Date</label>
+          <input type="date" id="filter-date" name="date" autocomplete="off" />
+          <span class="field-hint">Leave empty for any date</span>
+        </div>
+        <div class="field">
+          <label for="filter-location">District or venue</label>
+          <input type="text" id="filter-location" name="location" placeholder="e.g. Jinshui" autocomplete="off" maxlength="100" />
+          <span class="field-hint">Partial names work too</span>
+        </div>
+        <div class="field">
+          <label for="filter-category">Category</label>
+          <select id="filter-category" name="category">
+            <option value="">All categories</option>
+          </select>
+          <span class="field-hint">Loaded from the categories API</span>
+        </div>
+        <div class="filter-actions">
+          <button type="submit" class="btn btn-primary" id="search-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+            Search
+          </button>
+          <button type="button" id="clear-btn" class="btn btn-ghost">Clear</button>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="filter-location">Location</label>
-        <input type="text" id="filter-location" name="location" placeholder="e.g. Jinshui District" autocomplete="off" />
-      </div>
-      <div class="form-group">
-        <label for="filter-category">Category</label>
-        <select id="filter-category" name="category">
-          <option value="">All Categories</option>
-        </select>
-      </div>
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Search</button>
-        <button type="button" id="clear-btn" class="btn btn-ghost">Clear Filters</button>
-      </div>
+      <div id="alert-container" style="margin-top: 16px;"></div>
     </form>
 
-    <div id="alert-container" style="margin-top:18px;"></div>
+    <!-- Results ----------------------------------------------------------- -->
+    <div class="results-bar">
+      <p class="result-count" id="result-count" aria-live="polite">Reading the event database…</p>
+      <div class="active-filters" id="active-filters"></div>
+    </div>
 
-    <section style="margin-top:30px;">
-      <h2 class="section-title" style="font-size:1.3rem;">Search Results</h2>
-      <p class="section-sub" id="result-count"></p>
-      <div id="results-container" class="card-grid"></div>
-    </section>
+    <div id="results-container" class="card-grid" aria-live="polite">
+      <div class="skeleton-card"><div class="skeleton s-media"></div><div class="skeleton s-line short"></div><div class="skeleton s-line"></div></div>
+      <div class="skeleton-card"><div class="skeleton s-media"></div><div class="skeleton s-line short"></div><div class="skeleton s-line"></div></div>
+      <div class="skeleton-card"><div class="skeleton s-media"></div><div class="skeleton s-line short"></div><div class="skeleton s-line"></div></div>
+    </div>
   </main>
 
-  <footer>
-    <p>© 2026 Zhengzhou Charity — PROG2002 Assignment 2 Demo</p>
-  </footer>
+  <footer id="site-footer"></footer>
 
+  <script src="js/config.js"></script>
   <script src="js/common.js"></script>
   <script src="js/search.js"></script>
 </body>

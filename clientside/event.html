@@ -3,31 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zhengzhou Charity | Event Details</title>
+  <title>Zhengzhou Charity | Event details</title>
+  <meta name="description" content="Event details, fundraising progress, live weather for the day and the full guest list, newest registration first." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%2314382D'/%3E%3Cpath d='M12 19s-6-3.7-6-8a3.8 3.8 0 0 1 6-2.7A3.8 3.8 0 0 1 18 11c0 4.3-6 8-6 8Z' fill='%23FAF7F0'/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <div id="nav-placeholder"></div>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header id="site-header"></header>
 
-  <main class="container">
+  <main id="main" class="container">
     <div id="alert-container"></div>
     <div id="event-container">
-      <div class="loading">Loading event details…</div>
+      <div class="loading" style="margin-top: 60px;">Loading event details…</div>
     </div>
   </main>
 
-  <footer>
-    <p>© 2026 Zhengzhou Charity — PROG2002 Assignment 2 Demo</p>
-  </footer>
+  <footer id="site-footer"></footer>
 
-  <div class="modal-backdrop" id="register-modal">
-    <div class="modal">
-      <h3>Event Registration</h3>
-      <p>This feature is currently under construction.</p>
-      <button class="btn btn-primary" id="modal-close">OK</button>
-    </div>
-  </div>
-
+  <script src="js/config.js"></script>
   <script src="js/common.js"></script>
   <script src="js/event.js"></script>
 </body>

@@ -19,8 +19,10 @@ The system consists of two websites that share one RESTful API and one MySQL dat
 | ----- | --------------------------------------------------------------------------------- | ------------- |
 | **1** | **Database improvements** — registration table, geo-coordinates, sample data       | **Completed** |
 | **2** | **RESTful API improvements** — full C.R.U.D. for events, registrations, 409 rule   | **Completed** |
+| **3** | **Client-side website** — registration page, live guest list, weather API          | **Completed** |
+| **4** | **Admin-side website** — event and category management                            | Not started   |
 
-_This README documents Parts 1 and 2 (database and RESTful API)._
+_This README documents Parts 1–3 (database, RESTful API and the client-side website)._
 
 ---
 
@@ -53,11 +55,18 @@ charityevents-a3/
 │       ├── registrations.js      # /api/registrations endpoints
 │       └── categories.js         # /api/categories endpoint
 ├── clientside/                   # Public website (HTML + vanilla JS)
-│   ├── index.html                # Home page
-│   ├── search.html               # Search page
-│   ├── event.html                # Event detail page
-│   ├── css/style.css
-│   └── js/                       # common.js, index.js, search.js, event.js
+│   ├── index.html                # Home: hero, impact counters, event grid
+│   ├── search.html               # Search: date / district / category filters
+│   ├── event.html                # Event details + live guest list + weather
+│   ├── registration.html         # NEW in A3: registration form and confirmation
+│   ├── css/style.css             # One design system for all four pages
+│   └── js/
+│       ├── config.js             # API base URL (single place to change on deploy)
+│       ├── common.js             # fetch wrapper, formatters, header/footer, card template
+│       ├── index.js              # Home page logic
+│       ├── search.js             # Search + filter chips + shareable URL
+│       ├── event.js              # Event detail, guest list, Open-Meteo forecast
+│       └── registration.js       # Form validation, POST, 201/409/400 handling
 ├── database/
 │   └── charityevents_a3.sql      # Complete schema + data (single SQL file)
 └── docs/
@@ -547,6 +556,104 @@ it created at the end, so running it twice leaves the database exactly as it was
 
 ---
 
+## Client-Side Website (Part 3)
+
+The public website is four HTML pages sharing one stylesheet and one JavaScript helper file. No
+framework is used — plain **HTML, CSS, JavaScript, DOM and Promises**, as the brief requires.
+
+| Page                | Purpose                                                              | API calls                                      |
+| ------------------- | -------------------------------------------------------------------- | ---------------------------------------------- |
+| `index.html`        | Hero, live impact counters, upcoming events, short past-events strip | `GET /api/events/home`                         |
+| `search.html`       | Filter by date, district/venue and category; shareable URL           | `GET /api/events/search`, `GET /api/categories` |
+| `event.html`        | Event details, fundraising progress, **full guest list**, forecast   | `GET /api/events/:id`, Open-Meteo forecast     |
+| `registration.html` | Event summary + registration form + confirmation                     | `GET /api/events/:id`, `POST /api/registrations` |
+
+### Requirement mapping
+
+| Requirement in the brief                                                        | Where it is implemented                                                |
+| ------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Event page displays all registrations for that event, latest purchase first      | `js/event.js` → `renderGuestList()`; the API returns `registration_date DESC` |
+| "Register" button now links to the new registration page                        | `js/event.js` → `renderEventDetail()` builds `registration.html?eventId=<id>` |
+| Registration page shows the selected event's information                        | `js/registration.js` → summary card filled from `GET /api/events/:id`   |
+| Form collects user details, registration date, contact details, number of tickets | `registration.html` + `renderLayout()`                                 |
+| Client-side validation with an appropriate alert                                 | `bindForm()` → per-field validators + summary alert + inline messages   |
+| Finalise button inserts the record through the Part 2 endpoint                   | `POST /api/registrations` (JSON)                                        |
+| Confirmation message and navigation after success                                | Receipt panel with reference, "see the guest list" / "back to home"     |
+| Event ID passed between pages                                                    | URL query string `?eventId=`                                           |
+
+### Data flow
+
+1. `js/config.js` resolves the API base URL once (`window.APP_CONFIG.API_BASE`).
+2. A page calls `apiRequest('/events/1')` in `js/common.js`, which wraps `fetch` with a 12-second
+   timeout, JSON parsing and a uniform error object (`status`, `details`).
+3. The parsed JSON is passed to a template function that returns an escaped HTML string, which is
+   assigned to a container — DOM rendering happens in one place per page.
+4. Anything the API rejects (400/404/409/network) becomes a visible state: an inline alert, an empty
+   state with a call to action, or a retry panel.
+
+### Registration outcomes
+
+| Response / event        | What the visitor sees                                                             |
+| ----------------------- | --------------------------------------------------------------------------------- |
+| `201 Created`           | Confirmation screen with reference `REG-0000xx`, tickets, total and next actions   |
+| `400 Validation failed` | Alert listing the API's `details[]` messages                                       |
+| `409 Conflict`          | "You are already on the list" screen, with the duplicate e-mail and a guest-list link |
+| `404 Not found`         | "This event no longer exists" message inside the form                              |
+| Network failure / timeout | Retry message; the form keeps the typed values                                  |
+
+### Validation rules (client side)
+
+| Field               | Rule                                                                 |
+| ------------------- | -------------------------------------------------------------------- |
+| Full name           | Required, 2–120 characters                                           |
+| Email               | Required, single `@`, valid domain, ≤ 150 characters                 |
+| Phone               | Optional, digits/space/`+`/`(`/`)`/`-` only, 6–30 characters         |
+| Registration date   | Required, `YYYY-MM-DD`, cannot be in the future                      |
+| Number of tickets   | Whole number, 1–10 (stepper keeps the value in range)                |
+
+Errors appear under the field, the field turns red, the summary alert lists every problem and focus
+moves to the first invalid input. Server-side rules remain authoritative: `UNIQUE(event_id,
+user_email)` and `CHECK (num_tickets > 0)` are enforced by MySQL as well.
+
+### Guest list
+
+- Sorted by the API (`registration_date DESC, registration_id DESC`), so the newest registration is
+  always first and is labelled **Latest**.
+- Shows name, partially hidden e-mail (`a•••e@example.com`), ticket count, full timestamp and a
+  relative time ("2 days ago").
+- Empty events show a "be the first to register" state instead of a blank card.
+
+### Extra: Open-Meteo weather forecast
+
+`js/event.js` requests
+`https://api.open-meteo.com/v1/forecast?latitude=…&longitude=…&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia/Shanghai`
+using the `latitude` / `longitude` columns added in Part 1.
+
+- The card appears only for upcoming events within the 16-day forecast window.
+- Weather codes are translated to plain English (clear sky, drizzle, rain, thunderstorm …) with an
+  inline SVG icon.
+- If the request fails or the event has no coordinates, the card is simply not rendered — the event
+  page never depends on a third-party service.
+
+### Interaction details
+
+- Loading skeletons while events are fetched, explicit empty states, and retry buttons on failure.
+- Search filters are written into the URL (`search.html?location=Jinshui`), so a result can be shared.
+- Filter chips let the visitor remove one filter at a time.
+- Sticky booking/summary panels on desktop; single-column layout on phones; labelled form controls,
+  visible focus rings, `aria-live` result counts and `prefers-reduced-motion` support.
+
+### Pointing the website at the API
+
+`clientside/js/config.js` holds the only hard-coded address. Locally it resolves to
+`http://localhost:3000/api` automatically; after deployment either leave it empty (same origin) or set:
+
+```js
+var API_ORIGIN = 'https://your-cpanel-domain.example';
+```
+
+---
+
 ## Setup & Run (Local Development)
 
 ### 1. Prerequisites
@@ -612,7 +719,24 @@ Zhengzhou Charity Events API running at http://localhost:3000
 
 ### 5. Open the client website
 
-Serve `clientside/` with any static server and open `index.html`.
+Keep the API running, then serve the `clientside/` folder with any static server:
+
+```bash
+cd clientside
+npx serve .          # or: python -m http.server 5500
+```
+
+| Page                | URL                                                |
+| ------------------- | -------------------------------------------------- |
+| Home                | `/index.html`                                       |
+| Search              | `/search.html`                                      |
+| Event details       | `/event.html?eventId=1`                             |
+| Registration        | `/registration.html?eventId=1`                      |
+
+> The API runs on port 3000, so serve the static site on a different port (for example
+> `http://localhost:5500/index.html`). With `npx serve .` the address is printed in the terminal.
+> `js/config.js` already points local pages at `http://localhost:3000/api`; see
+> [Pointing the website at the API](#pointing-the-website-at-the-api) for deployment.
 
 ---
 
@@ -648,4 +772,4 @@ PROG2002 Assessment 3 — Group project (2 students).
 
 ---
 
-_Last updated: Parts 1 and 2 completed (database and RESTful API)._
+_Last updated: Parts 1–3 completed (database, RESTful API and the client-side website)._
