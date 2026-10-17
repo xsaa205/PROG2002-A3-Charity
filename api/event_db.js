@@ -33,7 +33,9 @@ const pool = mysql.createPool({
   host: process.env.DB_HOST || '127.0.0.1',
   port: Number(process.env.DB_PORT) || 3306,
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'Mysql123!',
+  // No password is written in the source: it must come from DB_PASSWORD
+  // (a local .env file, or the environment variables set in cPanel).
+  password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'charityevents_a3',
 
   // Pool behaviour

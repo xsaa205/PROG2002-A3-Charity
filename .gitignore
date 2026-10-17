@@ -1,3 +1,13 @@
 node_modules/
 .env
+.env.*
+!.env.example
+
+# MySQL Workbench model file (large binary; the schema is exported in database/)
 *.mwb
+
+# Logs and OS files
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db

@@ -1,0 +1,616 @@
+{
+  "info": {
+    "name": "PROG2002 A3 - Zhengzhou Charity Events API",
+    "description": "Postman collection for the PROG2002 Assessment 3 RESTful API (Part 2).\n\nRun the folders in order: Read -> Create -> Update -> Delete -> Registrations.\nThe collection stores the ID of a newly created event in the {{newEventId}}\nvariable so the PUT and DELETE requests can reuse it.\n\nEvery request includes test assertions, so the Postman runner turns green\nwhen the API behaves as required.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "eventId", "value": "1" },
+    { "key": "newEventId", "value": "" },
+    { "key": "registrationId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Read (GET)",
+      "item": [
+        {
+          "name": "List all events (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('returns an array of events', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data).to.be.an('array');",
+                  "  pm.expect(body.total).to.be.a('number');",
+                  "});",
+                  "pm.test('includes suspended events for the admin site', () => {",
+                  "  const statuses = pm.response.json().data.map(e => e.status);",
+                  "  pm.expect(statuses).to.include('suspended');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/events"
+          }
+        },
+        {
+          "name": "List events with pagination",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('respects the limit parameter', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data.length).to.be.at.most(3);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/events?limit=3&offset=0"
+          }
+        },
+        {
+          "name": "Home page events",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('never exposes suspended events', () => {",
+                  "  const rows = pm.response.json().data;",
+                  "  rows.forEach(e => pm.expect(e.status).to.not.equal('suspended'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/events/home"
+          }
+        },
+        {
+          "name": "Search by category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('every row matches the filter', () => {",
+                  "  pm.response.json().data.forEach(e => pm.expect(e.category_id).to.eql(1));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/events/search?category=1"
+          }
+        },
+        {
+          "name": "Search with invalid date -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/events/search?date=not-a-date"
+          }
+        },
+        {
+          "name": "Single event + registrations (newest first)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('returns the registrations array', () => {",
+                  "  pm.expect(pm.response.json().data.registrations).to.be.an('array');",
+                  "});",
+                  "pm.test('registrations are sorted by registration_date DESC', () => {",
+                  "  const dates = pm.response.json().data.registrations.map(r => r.registration_date);",
+                  "  const sorted = [...dates].sort().reverse();",
+                  "  pm.expect(dates).to.eql(sorted);",
+                  "});",
+                  "pm.test('registration_count matches the array length', () => {",
+                  "  const d = pm.response.json().data;",
+                  "  pm.expect(d.registration_count).to.eql(d.registrations.length);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/events/{{eventId}}"
+          }
+        },
+        {
+          "name": "Registrations of one event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('returns count and tickets_sold', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.count).to.be.a('number');",
+                  "  pm.expect(body.tickets_sold).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/events/{{eventId}}/registrations"
+          }
+        },
+        {
+          "name": "Unknown event -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/events/999999"
+          }
+        },
+        {
+          "name": "Categories",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/categories"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Create (POST)",
+      "item": [
+        {
+          "name": "Create event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.test('returns a Location header', () => {",
+                  "  pm.expect(pm.response.headers.has('Location')).to.eql(true);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('newEventId', body.data.event_id);",
+                  "pm.test('new event has an id', () => pm.expect(body.data.event_id).to.be.a('number'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"org_id\": 1,\n  \"category_id\": 1,\n  \"name\": \"Postman Test Charity Walk\",\n  \"short_description\": \"Created from the Postman collection.\",\n  \"full_description\": \"Temporary event used to verify the POST endpoint.\",\n  \"event_date\": \"2027-08-15\",\n  \"start_time\": \"09:00\",\n  \"end_time\": \"12:00\",\n  \"location\": \"Zhengzhou People's Park\",\n  \"address\": \"No. 1 Jinshui Road, Zhengzhou\",\n  \"latitude\": 34.7621,\n  \"longitude\": 113.6654,\n  \"ticket_price\": 20,\n  \"is_free\": 0,\n  \"goal_amount\": 10000,\n  \"raised_amount\": 0,\n  \"image_url\": \"https://picsum.photos/seed/postman/800/500\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/events"
+          }
+        },
+        {
+          "name": "Create event - missing required fields -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('returns detailed validation errors', () => {",
+                  "  pm.expect(pm.response.json().details).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"org_id\": 1\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/events"
+          }
+        },
+        {
+          "name": "Create event - malformed JSON -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"name\": ",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/events"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Update (PUT)",
+      "item": [
+        {
+          "name": "Update event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('field was updated', () => {",
+                  "  pm.expect(pm.response.json().data.name).to.eql('Postman Test Charity Walk (Updated)');",
+                  "});",
+                  "pm.test('omitted fields keep their previous value', () => {",
+                  "  pm.expect(pm.response.json().data.location).to.eql(\"Zhengzhou People's Park\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Test Charity Walk (Updated)\",\n  \"ticket_price\": 35.5\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/events/{{newEventId}}"
+          }
+        },
+        {
+          "name": "Update unknown event -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ghost\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/events/999999"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Delete (DELETE)",
+      "item": [
+        {
+          "name": "Delete event WITH registrations -> 409",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 Conflict', () => pm.response.to.have.status(409));",
+                  "pm.test('returns the required integrity message', () => {",
+                  "  pm.expect(pm.response.json().error).to.eql('Cannot delete event with existing registrations');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/events/{{eventId}}"
+          }
+        },
+        {
+          "name": "Delete event WITHOUT registrations -> 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('confirms the deletion', () => {",
+                  "  pm.expect(pm.response.json().message).to.include('deleted');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/events/{{newEventId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Registrations",
+      "item": [
+        {
+          "name": "Create registration",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('registrationId', body.data.registration_id);",
+                  "pm.test('ticket count is stored', () => pm.expect(body.data.num_tickets).to.eql(2));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_id\": 3,\n  \"user_name\": \"Postman Tester\",\n  \"user_email\": \"postman.tester@example.com\",\n  \"user_phone\": \"+86 139 0000 0000\",\n  \"num_tickets\": 2\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/registrations"
+          }
+        },
+        {
+          "name": "Duplicate registration for the same event -> 409",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 Conflict', () => pm.response.to.have.status(409));",
+                  "pm.test('explains the unique constraint', () => {",
+                  "  pm.expect(pm.response.json().error).to.include('already registered');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_id\": 3,\n  \"user_name\": \"Postman Tester\",\n  \"user_email\": \"postman.tester@example.com\",\n  \"num_tickets\": 1\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/registrations"
+          }
+        },
+        {
+          "name": "Invalid registration -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_id\": 0,\n  \"user_name\": \"\",\n  \"user_email\": \"not-an-email\",\n  \"num_tickets\": 0\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/registrations"
+          }
+        },
+        {
+          "name": "Registration for an unknown event -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_id\": 999999,\n  \"user_name\": \"Ghost\",\n  \"user_email\": \"ghost@example.com\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/registrations"
+          }
+        },
+        {
+          "name": "List all registrations",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('rows include the event name', () => {",
+                  "  pm.expect(pm.response.json().data[0]).to.have.property('event_name');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/registrations"
+          }
+        },
+        {
+          "name": "Single registration",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/registrations/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Error handling",
+      "item": [
+        {
+          "name": "Unsupported method -> 405",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('405 Method Not Allowed', () => pm.response.to.have.status(405));",
+                  "pm.test('advertises the allowed methods', () => {",
+                  "  pm.expect(pm.response.headers.has('Allow')).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/events/1"
+          }
+        },
+        {
+          "name": "Unknown endpoint -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/unknown"
+          }
+        }
+      ]
+    }
+  ]
+}
