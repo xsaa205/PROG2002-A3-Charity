@@ -4,7 +4,9 @@
 // RESTful endpoints for the charity EVENT REGISTRATIONS resource (A3, Part 2).
 //
 //   GET  /api/registrations        -> list all registrations (admin convenience)
+//   GET  /api/registrations/:id    -> a single registration
 //   POST /api/registrations        -> create a new registration
+//   DELETE /api/registrations/:id  -> remove a registration (cancellation)
 //
 // Business rules enforced here:
 //   * The referenced event must exist -> otherwise 404.
@@ -163,6 +165,26 @@ router.post('/', async (req, res) => {
     }
     console.error('[POST /api/registrations]', err);
     res.status(500).json({ error: 'Failed to create registration.' });
+  }
+});
+
+// ============================================================================
+// DELETE /api/registrations/:id
+//   Removes a single registration (a visitor cancelling, or admin cleanup).
+//   Deleting a registration never touches the event row, so it is always safe
+//   with respect to the FK on events: the FK only blocks deleting EVENTS.
+// ============================================================================
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  if (!v.isPositiveInt(id)) return res.status(400).json({ error: 'Invalid registration ID.' });
+
+  try {
+    const [result] = await db.query('DELETE FROM registrations WHERE registration_id = ?', [id]);
+    if (result.affectedRows === 0) return res.status(404).json({ error: 'Registration not found.' });
+    res.json({ message: `Registration ${id} deleted successfully.` });
+  } catch (err) {
+    console.error('[DELETE /api/registrations/:id]', err);
+    res.status(500).json({ error: 'Failed to delete registration.' });
   }
 });
 

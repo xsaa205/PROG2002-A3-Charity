@@ -97,7 +97,7 @@ const ROUTE_METHODS = [
   { pattern: /^\/api\/events\/\d+\/?$/, methods: ['GET', 'PUT', 'DELETE'] },
   { pattern: /^\/api\/events\/\d+\/registrations\/?$/, methods: ['GET'] },
   { pattern: /^\/api\/registrations\/?$/, methods: ['GET', 'POST'] },
-  { pattern: /^\/api\/registrations\/\d+\/?$/, methods: ['GET'] },
+  { pattern: /^\/api\/registrations\/(\d+)\/?$/, methods: ['GET', 'DELETE'] },
   { pattern: /^\/api\/categories\/?$/, methods: ['GET'] }
 ];
 

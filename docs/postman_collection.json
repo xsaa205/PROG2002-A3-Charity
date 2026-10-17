@@ -8,7 +8,8 @@
     { "key": "baseUrl", "value": "http://localhost:3000" },
     { "key": "eventId", "value": "1" },
     { "key": "newEventId", "value": "" },
-    { "key": "registrationId", "value": "" }
+    { "key": "registrationId", "value": "" },
+    { "key": "testEmail", "value": "postman.tester@example.com" }
   ],
   "item": [
     {
@@ -425,6 +426,18 @@
           "name": "Create registration",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Generate a unique e-mail on every run so the collection can be",
+                  "// re-run without violating UNIQUE(event_id, user_email). The",
+                  "// 'duplicate' request below reuses this same address on purpose.",
+                  "pm.collectionVariables.set('testEmail', 'postman.tester+' + Date.now() + '@example.com');"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -442,7 +455,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"event_id\": 3,\n  \"user_name\": \"Postman Tester\",\n  \"user_email\": \"postman.tester@example.com\",\n  \"user_phone\": \"+86 139 0000 0000\",\n  \"num_tickets\": 2\n}",
+              "raw": "{\n  \"event_id\": 3,\n  \"user_name\": \"Postman Tester\",\n  \"user_email\": \"{{testEmail}}\",\n  \"user_phone\": \"+86 139 0000 0000\",\n  \"num_tickets\": 2\n}",
               "options": { "raw": { "language": "json" } }
             },
             "url": "{{baseUrl}}/api/registrations"
@@ -469,7 +482,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"event_id\": 3,\n  \"user_name\": \"Postman Tester\",\n  \"user_email\": \"postman.tester@example.com\",\n  \"num_tickets\": 1\n}",
+              "raw": "{\n  \"event_id\": 3,\n  \"user_name\": \"Postman Tester\",\n  \"user_email\": \"{{testEmail}}\",\n  \"num_tickets\": 1\n}",
               "options": { "raw": { "language": "json" } }
             },
             "url": "{{baseUrl}}/api/registrations"
@@ -561,7 +574,48 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/registrations/1"
+            "url": "{{baseUrl}}/api/registrations/{{registrationId}}"
+          }
+        },
+        {
+          "name": "Delete registration -> 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('confirms the deletion', () => {",
+                  "  pm.expect(pm.response.json().message).to.include('deleted');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/registrations/{{registrationId}}"
+          }
+        },
+        {
+          "name": "Delete unknown registration -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/registrations/999999"
           }
         }
       ]

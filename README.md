@@ -62,7 +62,9 @@ charityevents-a3/
 ├── database/
 │   └── charityevents_a3.sql      # Complete schema + data (single SQL file)
 └── docs/
-    └── postman_collection.json   # Postman collection for testing Part 2
+    ├── postman_collection.json       # 26 requests with assertions (Part 2)
+    ├── postman_env_local.json        # Postman environment: localhost
+    └── postman_env_production.json   # Postman environment: deployed server
 ```
 
 ---
@@ -171,7 +173,8 @@ validated on the server before it reaches MySQL.
 | 9 | `GET`    | `/api/registrations`              | List all registrations with their event name                    |
 | 10 | `GET`   | `/api/registrations/:id`          | A single registration                                           |
 | 11 | `POST`  | `/api/registrations`              | Create a registration                                           |
-| 12 | `GET`   | `/api/categories`                 | List event categories                                           |
+| 12 | `DELETE` | `/api/registrations/:id`         | Delete a registration (cancellation / test clean-up)            |
+| 13 | `GET`   | `/api/categories`                 | List event categories                                           |
 
 ---
 
@@ -415,7 +418,7 @@ Status codes: `200` · `400` · `404` · `409` · `500`
 
 ---
 
-### 9–11. Registrations
+### 9–12. Registrations
 
 `GET /api/registrations` — every registration joined with its event name (admin convenience):
 
@@ -473,9 +476,24 @@ Business rules enforced:
 
 `registration_date` accepts either `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`.
 
+`DELETE /api/registrations/:id` — removes one registration (a visitor cancelling a
+ticket, or the admin cleaning up test data). Deleting a registration never affects
+the event row, because the `ON DELETE RESTRICT` rule only protects **events** that
+still have registrations:
+
+```http
+DELETE /api/registrations/13
+```
+
+```json
+{ "message": "Registration 13 deleted successfully." }
+```
+
+Status codes: `200` · `400` · `404` · `500`
+
 ---
 
-### 12. `GET /api/categories`
+### 13. `GET /api/categories`
 
 ```json
 { "count": 6, "data": [ { "category_id": 1, "name": "Charity Run", "description": "..." } ] }
@@ -498,14 +516,35 @@ Business rules enforced:
 
 ### Testing with Postman
 
-`docs/postman_collection.json` is a ready-to-use Postman v2.1 collection with **24 requests** in
+`docs/postman_collection.json` is a ready-to-use Postman v2.1 collection with **26 requests** in
 6 folders (Read → Create → Update → Delete → Registrations → Error handling). Each request contains
-assertions, so the Postman runner turns green when the API behaves as specified.
+assertions (**47 in total**), so the Postman runner turns green when the API behaves as specified.
 
-1. Open Postman → **Import** → select `docs/postman_collection.json`.
-2. Start the API (`npm start`).
-3. Run a folder, or the whole collection with **Run collection**. The `baseUrl` variable defaults to
-   `http://localhost:3000`; `newEventId` is filled automatically by the "Create event" request.
+Two environments are provided so the same collection can be pointed at a different server without
+editing any request:
+
+| File | `baseUrl` |
+| ---- | --------- |
+| `docs/postman_env_local.json` | `http://localhost:3000` |
+| `docs/postman_env_production.json` | the deployed cPanel domain (edit one value) |
+
+**In the Postman app**
+
+1. **Import** → select `docs/postman_collection.json`, then import one of the environment files.
+2. Pick the environment in the top-right selector.
+3. Start the API (`npm start`) and run a folder, or the whole collection with **Run collection**.
+   `newEventId` and `registrationId` are filled automatically by the create requests.
+
+**From the command line (Newman)**
+
+```bash
+npx newman run docs/postman_collection.json -e docs/postman_env_local.json
+```
+
+The collection is **repeat-safe**: it generates a unique e-mail on every run (so the
+`UNIQUE(event_id, user_email)` rule is not tripped by a previous run) and deletes the registration
+it created at the end, so running it twice leaves the database exactly as it was
+(10 events, 12 registrations). That makes it safe to demo live during the video.
 
 ---
 

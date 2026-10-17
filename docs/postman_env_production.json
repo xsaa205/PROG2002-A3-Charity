@@ -1,0 +1,19 @@
+{
+  "id": "a3-production-env",
+  "name": "A3 - Production (SCU cPanel)",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "https://youruser.scu.edu.au",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "eventId",
+      "value": "1",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}
