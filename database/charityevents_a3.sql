@@ -1,23 +1,42 @@
 -- ============================================================================
 -- PROG2002 Assessment 3 - Zhengzhou Charity Events Database
--- Database Name : charityevents_a3
--- Description   : Complete schema (schema + data) for the A3 dynamic website.
---                 Extends the A2 schema with an event REGISTRATION table and
---                 geo-coordinates (used by the optional Open-Meteo weather API).
+-- File          : charityevents_a3.sql   (schema + data in a single file)
 -- Engine        : InnoDB (required for FOREIGN KEY support)
 -- Charset       : utf8mb4 / utf8mb4_unicode_ci
 --
--- HOW TO IMPORT (cPanel / MySQL):
---   1. Log in to cPanel > MySQL Databases and create the database.
---   2. Open phpMyAdmin, select the database, go to the "Import" tab.
---   3. Upload and execute this single .sql file.
+-- WHAT THIS SCRIPT CONTAINS
+--   Extends the Assessment 2 schema with:
+--     * a new REGISTRATIONS table linked to EVENTS (Part 1 of A3)
+--     * latitude / longitude on EVENTS (optional Open-Meteo weather API)
+--     * 3 organisations, 6 categories, 10 events and 12 registrations
+--
+-- HOW TO IMPORT (local MySQL / XAMPP / WAMP)
+--   1. Create the database once:
+--        CREATE DATABASE charityevents_a3
+--          CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+--   2. Select that database, then import this file
+--      (phpMyAdmin > Import, or: mysql -u root -p charityevents_a3 < charityevents_a3.sql)
+--
+-- HOW TO IMPORT (SCU cPanel)
+--   1. cPanel > MySQL Databases > create a database. cPanel prefixes the name,
+--      e.g. "youruser_charityevents_a3".
+--   2. phpMyAdmin > select that database > Import > upload this file.
+--   The script deliberately does NOT run CREATE DATABASE / USE, because a cPanel
+--   MySQL user is not allowed to create databases, and the real database name
+--   contains the cPanel account prefix. Importing into the database you selected
+--   therefore works both locally and on cPanel without editing this file.
 -- ============================================================================
 
-DROP DATABASE IF EXISTS charityevents_a3;
-CREATE DATABASE charityevents_a3
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-USE charityevents_a3;
+SET NAMES utf8mb4;
+
+-- Allow the file to be re-imported safely: drop the child table first so the
+-- foreign keys never block the drop.
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS registrations;
+DROP TABLE IF EXISTS events;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS organisations;
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- ============================================================================
 -- Table: organisations  (Charity Organisations)
@@ -134,14 +153,16 @@ INSERT INTO categories (category_id, name, description) VALUES
 
 -- ============================================================================
 -- Initial Data: Charity Events
---   latitude/longitude are approximate real coordinates of each venue in
+--   event_id is stated explicitly so that the registration rows below always
+--   reference the intended event, whatever the AUTO_INCREMENT counter is.
+--   latitude / longitude are approximate real coordinates of each venue in
 --   Zhengzhou, Henan Province (used by the Open-Meteo weather lookup).
 -- ============================================================================
 INSERT INTO events
-(org_id, category_id, name, short_description, full_description, event_date, start_time, end_time,
+(event_id, org_id, category_id, name, short_description, full_description, event_date, start_time, end_time,
  location, address, latitude, longitude, ticket_price, is_free, goal_amount, raised_amount, image_url, is_suspended)
 VALUES
-(1, 1, 'Zhengzhou Lvcheng Charity Run',
+(1, 1, 1, 'Zhengzhou Lvcheng Charity Run',
  'Run along the beautiful East Zhengzhou New Area with thousands of runners.',
  'The Zhengzhou Lvcheng Charity Run brings together runners, hikers and supporters for a 10-kilometre charity run along the lovely lakes of East Zhengzhou New Area. Every penny raised will go directly to the vulnerable family assistance programme of the Zhengzhou Lvcheng Charity Foundation. Whether you are an experienced marathon runner or a first-time participant, everyone is welcome. There will be live music, refreshment stations and a carnival at the finish line.',
  '2026-10-18', '07:00:00', '12:00:00',
@@ -150,7 +171,7 @@ VALUES
  45.00, 0, 50000.00, 18500.00,
  'https://picsum.photos/seed/zzrun/800/500', 0),
 
-(2, 2, 'Starlight Charity Gala Dinner',
+(2, 2, 2, 'Starlight Charity Gala Dinner',
  'An unforgettable evening featuring fine dining, auctions and live entertainment.',
  'Starlight Charity Gala Dinner is the flagship annual fundraising event of Zhongyuan Love Alliance. Guests will enjoy a five-course dinner prepared by award-winning chefs, listen to live jazz music and inspirational speeches from teenagers benefiting from our programmes. A silent auction offering luxury getaways and unique experiences will also be held in the evening. Dress code: formal wear.',
  '2026-11-08', '18:30:00', '23:00:00',
@@ -159,7 +180,7 @@ VALUES
  250.00, 0, 200000.00, 87000.00,
  'https://picsum.photos/seed/zzgala/800/500', 0),
 
-(3, 3, 'Love Artwork Charity Auction',
+(3, 2, 3, 'Love Artwork Charity Auction',
  'Bid on fine art donated by local and international artists.',
  'The Love Artwork Charity Auction is a well-organised silent auction exhibiting more than 80 artworks generously donated by famous and emerging artists. All proceeds will support the art therapy programme for hospitalised children run by Zhongyuan Love Alliance. Wine and snacks will be served during the night, with chances to meet artists. Pre-registration is free, but bidding requires a registration badge.',
  '2026-11-22', '17:00:00', '21:30:00',
@@ -168,7 +189,7 @@ VALUES
  0.00, 1, 80000.00, 32000.00,
  'https://picsum.photos/seed/zzart/800/500', 0),
 
-(1, 4, 'Voices of Hope Charity Concert',
+(4, 1, 4, 'Voices of Hope Charity Concert',
  'A night of live performances by top local musicians supporting public welfare.',
  'Voices of Hope brings together Henan''s most popular musicians for an incredible night of live performances. From indie folk to soulful jazz, the line-up celebrates diversity and community. All ticket revenue will go to the emergency relief fund of Zhengzhou Lvcheng Charity Foundation. Doors open at 18:30, opening performance starts at 19:00.',
  '2026-12-05', '19:00:00', '23:30:00',
@@ -177,7 +198,7 @@ VALUES
  75.00, 0, 120000.00, 45000.00,
  'https://picsum.photos/seed/zzmusic/800/500', 0),
 
-(3, 5, 'Community Food Charity Festival',
+(5, 3, 5, 'Community Food Charity Festival',
  'Local food, culture and community celebration suitable for the whole family.',
  'The Community Food Charity Festival transforms the park into a vibrant market with local food stalls, cooking demonstrations, children''s activities and live entertainment. Admission is free. Every food purchase supports local merchants and the urban gardening project of the Yellow River Public Welfare Association. Come with an empty stomach and leave with joy while helping us build a greener city.',
  '2026-12-20', '10:00:00', '18:00:00',
@@ -186,7 +207,7 @@ VALUES
  0.00, 1, 40000.00, 12500.00,
  'https://picsum.photos/seed/zzfood/800/500', 0),
 
-(3, 6, 'Yellow River Riverside Charity Cycling',
+(6, 3, 6, 'Yellow River Riverside Charity Cycling',
  'Cycle 100 kilometres along the beautiful Yellow River riverside to support charity.',
  'Yellow River Riverside Charity Cycling offers three route options (30km, 60km and 100km) passing through the stunning riverside and rural scenery in Henan. Cyclists of all skill levels are welcome. Registration includes cycling jersey, support vehicles, supply stations and a post-ride celebration meal. Funds raised support the Yellow River ecological protection project of Yellow River Public Welfare Association.',
  '2027-02-14', '06:00:00', '15:00:00',
@@ -195,7 +216,7 @@ VALUES
  60.00, 0, 90000.00, 21000.00,
  'https://picsum.photos/seed/zzride/800/500', 0),
 
-(1, 2, 'Warm Winter Charity Gala Dinner',
+(7, 1, 2, 'Warm Winter Charity Gala Dinner',
  'A cosy winter charity dinner raising funds for homeless people.',
  'Our Warm Winter Charity Gala Dinner is an intimate evening with warm food, live acoustic music and community stories. Each ticket provides one night of shelter and a hot meal for people in need. A live auction and lucky draw with rich prizes will be held on site.',
  '2026-06-15', '18:00:00', '22:30:00',
@@ -204,7 +225,7 @@ VALUES
  180.00, 0, 100000.00, 96000.00,
  'https://picsum.photos/seed/zzwinter/800/500', 0),
 
-(2, 1, '2026 Spring Charity Run',
+(8, 2, 1, '2026 Spring Charity Run',
  'A 5km family-friendly charity run through the park.',
  'The Spring Charity Run is an easy 5km activity perfect for families, beginner runners and anyone who wants to enjoy a lovely spring morning. The route winds through the park with entertainment performances alongside the way. All funds raised support after-school tutoring programmes run by Zhongyuan Love Alliance.',
  '2026-03-10', '08:00:00', '11:00:00',
@@ -213,7 +234,7 @@ VALUES
  25.00, 0, 30000.00, 28400.00,
  'https://picsum.photos/seed/zzspring/800/500', 0),
 
-(3, 4, 'Charity Music Night',
+(9, 3, 4, 'Charity Music Night',
  'An intimate acoustic music night supporting environmental education.',
  'Charity Music Night is a cosy acoustic concert where local artists perform in a warm venue. All proceeds support school education programmes of Yellow River Public Welfare Association. There will be a lucky draw and opportunities to meet performers during the night.',
  '2026-07-25', '19:30:00', '22:00:00',
@@ -222,9 +243,9 @@ VALUES
  50.00, 0, 25000.00, 24800.00,
  'https://picsum.photos/seed/zznight/800/500', 0),
 
--- Suspended event: Should NOT appear on the public homepage or search pages,
--- but IS visible on the admin-side website.
-(1, 1, 'Uncertified Charity Sprint',
+-- Suspended event: must NOT appear on the public home / search pages, but must
+-- still be visible on the admin-side website (Active / Past / Suspended).
+(10, 1, 1, 'Uncertified Charity Sprint',
  'This event has been suspended due to policy review.',
  'This event has been suspended for policy violations and should not be displayed on public websites.',
  '2026-11-01', '09:00:00', '12:00:00',
@@ -240,7 +261,7 @@ VALUES
 --     * several registrations for a single event (event_id = 1) so the
 --       "sorted by latest registration date" requirement can be shown
 --     * the SAME user (alice@example.com) registering for MULTIPLE events,
---       while the UNIQUE(event_id, user_email) rule prevents a duplicate.
+--       while the UNIQUE(event_id, user_email) rule prevents a duplicate
 --   NOTE: the suspended event (event_id = 10) intentionally has no
 --         registrations, so it can be safely deleted on the admin site.
 -- ============================================================================
@@ -263,7 +284,10 @@ VALUES
 -- ============================================================================
 -- End of script.
 -- Quick sanity checks you can run after import:
+--   SELECT COUNT(*) FROM organisations;                     -- expect 3
+--   SELECT COUNT(*) FROM categories;                        -- expect 6
+--   SELECT COUNT(*) FROM events;                            -- expect 10
 --   SELECT COUNT(*) FROM registrations;                     -- expect 12
---   SELECT COUNT(DISTINCT event_id) FROM registrations;     -- expect 9
+--   SELECT COUNT(DISTINCT event_id) FROM registrations;      -- expect 9
 --   SELECT * FROM registrations WHERE event_id = 1 ORDER BY registration_date DESC;
 -- ============================================================================

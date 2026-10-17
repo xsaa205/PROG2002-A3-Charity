@@ -206,6 +206,11 @@ function assembleEvent(input, base) {
     out[key] = b;
   }
 
+  // --- chronological consistency: the event must not end before it starts ---
+  if (out.start_time && out.end_time && out.end_time <= out.start_time) {
+    errors.push('end_time must be later than start_time.');
+  }
+
   // --- final required check (covers POST where nothing was supplied) ---
   if (out.org_id == null) errors.push('org_id is required.');
   if (out.category_id == null) errors.push('category_id is required.');

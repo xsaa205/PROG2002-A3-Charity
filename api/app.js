@@ -19,7 +19,10 @@ const app = express();
 // ----------------------------------------------------------------------------
 // Global middleware
 // ----------------------------------------------------------------------------
-app.use(cors());                          // allow the client-side and admin-side sites to call the API
+// Allow the client-side and admin-side sites to call the API. In production the
+// allowed origin can be locked down with CORS_ORIGIN (e.g. the cPanel domain);
+// the default "*" keeps local development and the Postman tests working.
+app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
 
 // Parse JSON request bodies. The size limit protects the API from oversized
 // payloads (a simple but effective denial-of-service guard).

@@ -359,7 +359,8 @@ Response — `201 Created`, with `Location: /api/events/13`:
 ```
 
 Validation performed: required fields, field lengths, `YYYY-MM-DD` date format, `HH:MM[:SS]` time
-format, non-negative amounts, `0/1` flags, and that `org_id` / `category_id` actually exist.
+format, `end_time` later than `start_time`, non-negative amounts, `0/1` flags, and that `org_id` /
+`category_id` actually exist.
 
 Status codes: `201` · `400` · `500`
 
@@ -517,14 +518,23 @@ assertions, so the Postman runner turns green when the API behaves as specified.
 
 ### 2. Import the database
 
-Import the single SQL file `database/charityevents_a3.sql` via phpMyAdmin (**Import** tab) or the
-command line:
+Create the database once, then import the single SQL file into it:
 
-```bash
-mysql -u root -p < database/charityevents_a3.sql
+```sql
+CREATE DATABASE charityevents_a3 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-The script creates the `charityevents_a3` database, all four tables and the sample data.
+```bash
+mysql -u root -p charityevents_a3 < database/charityevents_a3.sql
+```
+
+or via phpMyAdmin: select the database → **Import** → upload `database/charityevents_a3.sql`.
+
+The script creates the four tables and inserts the sample data. It deliberately contains **no
+`CREATE DATABASE` / `USE` statement**, so the same file also imports cleanly on the SCU cPanel,
+where the database name is prefixed with the cPanel account (e.g. `youruser_charityevents_a3`) and
+the MySQL user is not allowed to create databases. Re-running the file is safe: it drops and
+recreates the four tables.
 
 ### 3. Configure the connection
 
@@ -543,6 +553,7 @@ DB_USER=root
 DB_PASSWORD=your_password
 DB_NAME=charityevents_a3
 PORT=3000
+CORS_ORIGIN=*
 ```
 
 ### 4. Install dependencies and start the server
@@ -564,6 +575,18 @@ Zhengzhou Charity Events API running at http://localhost:3000
 ### 5. Open the client website
 
 Serve `clientside/` with any static server and open `index.html`.
+
+---
+
+## Repository & Team
+
+- **GitHub repository:** <https://github.com/xsaa205/PROG2002-A3-Charity>
+- **Branch:** `main`
+- Both team members work on the same repository and commit incrementally, so the commit history
+  reflects the development progress of each part (database → API → client site → admin site →
+  deployment).
+- Commit messages follow a short conventional prefix (`feat`, `fix`, `docs`, `refactor`) and describe
+  **what changed and why**, and each part of the assessment has its own commit.
 
 ---
 
