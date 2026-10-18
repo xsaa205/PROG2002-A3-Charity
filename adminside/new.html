@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add event · Admin Console · Zhengzhou Charity</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="admin-topbar">
+    <button class="menu-btn" id="sidebar-toggle" type="button" aria-label="Open menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <strong>Admin Console</strong>
+  </header>
+
+  <div id="admin-layout">
+    <aside class="admin-sidebar">
+      <nav id="sidebar-nav" aria-label="Admin navigation"></nav>
+    </aside>
+
+    <main class="admin-main">
+      <div class="page-head">
+        <div>
+          <h1>Add a new event</h1>
+          <p class="subtitle">Create a charity event. Fields marked <span style="color:var(--red)">*</span> are required.</p>
+        </div>
+        <a class="btn btn-ghost" href="index.html">Cancel</a>
+      </div>
+
+      <div id="alert-host"></div>
+
+      <form id="event-form" novalidate>
+        <div class="form-card">
+          <h2>Basic details</h2>
+          <p class="section-note">The essentials every event needs.</p>
+          <div class="form-grid">
+            <div class="field" data-field="org_id">
+              <label for="org_id">Organisation <span class="req">*</span></label>
+              <select id="org_id" name="org_id" required><option value="">Select an organisation…</option></select>
+              <div class="err-msg"></div>
+            </div>
+            <div class="field" data-field="category_id">
+              <label for="category_id">Category <span class="req">*</span></label>
+              <select id="category_id" name="category_id" required><option value="">Select a category…</option></select>
+              <div class="err-msg"></div>
+            </div>
+            <div class="field full" data-field="name">
+              <label for="name">Event name <span class="req">*</span></label>
+              <input type="text" id="name" name="name" maxlength="200" placeholder="e.g. Green City Spring Fun Run" />
+              <div class="err-msg"></div>
+            </div>
+            <div class="field full" data-field="short_description">
+              <label for="short_description">Short description</label>
+              <input type="text" id="short_description" name="short_description" maxlength="255" placeholder="One-line summary shown on cards." />
+              <div class="err-msg"></div>
+            </div>
+            <div class="field full" data-field="full_description">
+              <label for="full_description">Full description</label>
+              <textarea id="full_description" name="full_description" placeholder="Tell the story behind this event…"></textarea>
+              <div class="err-msg"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <h2>When &amp; where</h2>
+          <p class="section-note">Date, time and location information.</p>
+          <div class="form-grid">
+            <div class="field" data-field="event_date">
+              <label for="event_date">Event date <span class="req">*</span></label>
+              <input type="date" id="event_date" name="event_date" required />
+              <div class="err-msg"></div>
+            </div>
+            <div class="field" data-field="location">
+              <label for="location">Location <span class="req">*</span></label>
+              <input type="text" id="location" name="location" maxlength="150" placeholder="e.g. Jinshui District" />
+              <div class="err-msg"></div>
+            </div>
+            <div class="field" data-field="start_time">
+              <label for="start_time">Start time</label>
+              <input type="time" id="start_time" name="start_time" />
+              <div class="err-msg"></div>
+            </div>
+            <div class="field" data-field="end_time">
+              <label for="end_time">End time</label>
+              <input type="time" id="end_time" name="end_time" />
+              <div class="err-msg"></div>
+            </div>
+            <div class="field full" data-field="address">
+              <label for="address">Full address</label>
+              <input type="text" id="address" name="address" maxlength="255" placeholder="Street, district, city…" />
+              <div class="err-msg"></div>
+            </div>
+            <div class="field" data-field="latitude">
+              <label for="latitude">Latitude</label>
+              <input type="number" step="any" id="latitude" name="latitude" placeholder="-33.87" />
+              <div class="err-msg"></div>
+            </div>
+            <div class="field" data-field="longitude">
+              <label for="longitude">Longitude</label>
+              <input type="number" step="any" id="longitude" name="longitude" placeholder="151.21" />
+              <div class="err-msg"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <h2>Tickets &amp; fundraising</h2>
+          <p class="section-note">Pricing and the fundraising goal for this event.</p>
+          <div class="form-grid">
+            <div class="field" data-field="ticket_price">
+              <label for="ticket_price">Ticket price ($)</label>
+              <input type="number" step="0.01" min="0" id="ticket_price" name="ticket_price" value="0" />
+              <div class="err-msg"></div>
+            </div>
+            <div class="field" data-field="goal_amount">
+              <label for="goal_amount">Fundraising goal ($)</label>
+              <input type="number" step="0.01" min="0" id="goal_amount" name="goal_amount" value="0" />
+              <div class="err-msg"></div>
+            </div>
+            <div class="field" data-field="raised_amount">
+              <label for="raised_amount">Amount raised so far ($)</label>
+              <input type="number" step="0.01" min="0" id="raised_amount" name="raised_amount" value="0" />
+              <div class="err-msg"></div>
+            </div>
+            <div class="field" data-field="image_url">
+              <label for="image_url">Image URL</label>
+              <input type="url" id="image_url" name="image_url" maxlength="500" placeholder="https://…" />
+              <div class="err-msg"></div>
+            </div>
+            <div class="field">
+              <label>Options</label>
+              <div class="switch-row">
+                <span class="switch">
+                  <input type="checkbox" id="is_free" name="is_free" />
+                  <span class="slider"></span>
+                </span>
+                <span class="cell-sub">This is a free event</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Visibility</label>
+              <div class="switch-row">
+                <span class="switch">
+                  <input type="checkbox" id="is_suspended" name="is_suspended" />
+                  <span class="slider"></span>
+                </span>
+                <span class="cell-sub">Suspend this event (hide from public site)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <a class="btn btn-ghost" href="index.html">Cancel</a>
+          <button class="btn btn-primary" type="submit" id="submit-btn">Save event</button>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/form.js"></script>
+</body>
+</html>

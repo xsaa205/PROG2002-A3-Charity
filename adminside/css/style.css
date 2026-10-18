@@ -1,0 +1,270 @@
+/* ============================================================================
+   adminside/css/style.css — Admin Console design system
+   ----------------------------------------------------------------------------
+   A professional dashboard skin that shares the public site's forest-green +
+   cream language, but reads as an internal staff console (sidebar layout,
+   dense data tables, status badges). Built with plain CSS, no framework.
+   ========================================================================== */
+
+:root {
+  --forest-900: #14281d;
+  --forest-800: #1b3a2b;
+  --forest-700: #234b38;
+  --forest-600: #2f6b4f;
+  --forest-500: #3c8a63;
+  --forest-400: #5aa97e;
+  --forest-300: #8fc8a8;
+  --cream-50: #f6f3ea;
+  --cream-100: #efe9da;
+  --cream-200: #e3dcc8;
+  --ink-900: #1a1f1b;
+  --ink-700: #39423b;
+  --ink-500: #5d6660;
+  --ink-300: #97a09a;
+  --line: #e6e0d2;
+  --white: #ffffff;
+  --amber: #b8811e;
+  --amber-bg: #fbf2dd;
+  --red: #b23b3b;
+  --red-bg: #fbe9e9;
+  --green: #2f6b4f;
+  --green-bg: #e7f1ea;
+  --radius: 14px;
+  --radius-sm: 9px;
+  --shadow-sm: 0 1px 2px rgba(20, 40, 29, 0.06), 0 2px 8px rgba(20, 40, 29, 0.05);
+  --shadow-md: 0 6px 24px rgba(20, 40, 29, 0.10);
+  --serif: 'Iowan Old Style', 'Palatino Linotype', 'Georgia', serif;
+  --sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: var(--sans);
+  color: var(--ink-900);
+  background: var(--cream-50);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { font-family: var(--serif); font-weight: 600; color: var(--forest-900); line-height: 1.2; }
+a { color: var(--forest-600); text-decoration: none; }
+
+/* ---------------------------------------------------------------------------
+   Layout: fixed sidebar + scrollable content
+   ------------------------------------------------------------------------ */
+#admin-layout { display: grid; grid-template-columns: 264px 1fr; min-height: 100vh; }
+
+.admin-sidebar {
+  background: linear-gradient(180deg, var(--forest-900), var(--forest-800));
+  color: var(--cream-100);
+  display: flex; flex-direction: column;
+  padding: 22px 16px; position: sticky; top: 0; height: 100vh;
+}
+.admin-sidebar .brand { display: flex; align-items: center; gap: 11px; padding: 6px 8px 22px; }
+.admin-sidebar .brand-mark {
+  width: 38px; height: 38px; border-radius: 11px; flex: none;
+  display: grid; place-items: center; color: var(--white);
+  background: linear-gradient(135deg, var(--forest-500), var(--forest-400));
+}
+.admin-sidebar .brand-mark svg { width: 21px; height: 21px; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+.brand-name { font-family: var(--serif); font-weight: 600; font-size: 1.04rem; color: var(--white); }
+.brand-sub { font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--forest-300); }
+
+.nav-list { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.nav-list a {
+  display: flex; align-items: center; gap: 11px; padding: 11px 13px; border-radius: 10px;
+  color: var(--cream-100); font-weight: 500; font-size: 0.95rem; transition: background 0.16s, color 0.16s;
+}
+.nav-list a svg { width: 19px; height: 19px; opacity: 0.85; }
+.nav-list a:hover { background: rgba(255, 255, 255, 0.08); color: var(--white); }
+.nav-list a.active { background: rgba(255, 255, 255, 0.14); color: var(--white); box-shadow: inset 3px 0 0 var(--forest-400); }
+
+.sidebar-foot { margin-top: auto; padding-top: 18px; }
+.ghost-link { display: inline-flex; align-items: center; gap: 7px; color: var(--forest-300); font-size: 0.85rem; }
+.ghost-link svg { width: 16px; height: 16px; }
+.ghost-link:hover { color: var(--white); }
+
+.admin-main { padding: 30px 36px 56px; max-width: 1180px; }
+
+/* Mobile top bar (hidden on desktop) */
+.admin-topbar { display: none; }
+
+/* ---------------------------------------------------------------------------
+   Page header
+   ------------------------------------------------------------------------ */
+.page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-bottom: 24px; }
+.page-head h1 { font-size: 1.85rem; margin: 0 0 4px; }
+.page-head .subtitle { color: var(--ink-500); margin: 0; font-size: 0.96rem; }
+
+/* ---------------------------------------------------------------------------
+   Buttons
+   ------------------------------------------------------------------------ */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; justify-content: center;
+  font-family: var(--sans); font-weight: 600; font-size: 0.92rem; cursor: pointer;
+  border: 1px solid transparent; border-radius: 10px; padding: 10px 18px; transition: all 0.16s;
+  background: var(--forest-600); color: var(--white);
+}
+.btn svg { width: 17px; height: 17px; }
+.btn:hover { background: var(--forest-700); }
+.btn-primary { background: var(--forest-600); }
+.btn-ghost { background: transparent; color: var(--forest-700); border-color: var(--line); }
+.btn-ghost:hover { background: var(--cream-100); }
+.btn-danger { background: var(--white); color: var(--red); border-color: var(--red-bg); }
+.btn-danger:hover { background: var(--red-bg); }
+.btn-sm { padding: 7px 12px; font-size: 0.84rem; border-radius: 8px; }
+.btn-block { width: 100%; }
+
+/* ---------------------------------------------------------------------------
+   Stat cards
+   ------------------------------------------------------------------------ */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; margin-bottom: 26px; }
+.stat-card {
+  background: var(--white); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 18px 20px; box-shadow: var(--shadow-sm);
+}
+.stat-card .stat-value { font-family: var(--serif); font-size: 1.9rem; font-weight: 600; color: var(--forest-800); line-height: 1; }
+.stat-card .stat-label { color: var(--ink-500); font-size: 0.84rem; margin-top: 6px; display: flex; align-items: center; gap: 6px; }
+.stat-card .stat-label svg { width: 15px; height: 15px; }
+.stat-card.accent-upcoming { border-top: 3px solid var(--forest-500); }
+.stat-card.accent-past { border-top: 3px solid var(--ink-300); }
+.stat-card.accent-suspended { border-top: 3px solid var(--amber); }
+.stat-card.accent-total { border-top: 3px solid var(--forest-700); }
+
+/* ---------------------------------------------------------------------------
+   Toolbar (search + filter)
+   ------------------------------------------------------------------------ */
+.toolbar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+.search-box { position: relative; flex: 1 1 260px; }
+.search-box svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 17px; height: 17px; color: var(--ink-300); }
+.search-box input { width: 100%; padding: 10px 14px 10px 40px; border: 1px solid var(--line); border-radius: 10px; font-size: 0.92rem; background: var(--white); }
+.search-box input:focus { outline: none; border-color: var(--forest-400); box-shadow: 0 0 0 3px rgba(90, 169, 126, 0.18); }
+select.filter { padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); font-size: 0.92rem; color: var(--ink-700); }
+select.filter:focus { outline: none; border-color: var(--forest-400); }
+
+/* ---------------------------------------------------------------------------
+   Table
+   ------------------------------------------------------------------------ */
+.table-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+table.data { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+table.data thead th {
+  text-align: left; font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-500); background: var(--cream-50); padding: 13px 16px; border-bottom: 1px solid var(--line); font-weight: 600;
+}
+table.data tbody td { padding: 14px 16px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+table.data tbody tr:last-child td { border-bottom: none; }
+table.data tbody tr:hover { background: var(--cream-50); }
+.cell-name { font-weight: 600; color: var(--forest-900); }
+.cell-sub { color: var(--ink-500); font-size: 0.82rem; }
+.cell-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* ---------------------------------------------------------------------------
+   Badges
+   ------------------------------------------------------------------------ */
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 0.74rem; font-weight: 600; line-height: 1.6; }
+.badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.8; }
+.badge-upcoming { color: var(--green); background: var(--green-bg); }
+.badge-past { color: var(--ink-500); background: var(--cream-100); }
+.badge-suspended { color: var(--amber); background: var(--amber-bg); }
+.badge-category { color: var(--forest-700); background: var(--cream-100); }
+
+/* ---------------------------------------------------------------------------
+   Alerts
+   ------------------------------------------------------------------------ */
+.alert { display: flex; gap: 11px; align-items: flex-start; padding: 13px 16px; border-radius: 10px; margin: 0 0 18px; font-size: 0.9rem; }
+.alert svg { width: 19px; height: 19px; flex: none; margin-top: 1px; }
+.alert-error { background: var(--red-bg); color: #8c2b2b; }
+.alert-success { background: var(--green-bg); color: #235239; }
+.alert-info { background: var(--cream-100); color: var(--ink-700); }
+.alert ul { margin: 6px 0 0; padding-left: 18px; }
+.alert li { margin: 2px 0; }
+
+/* ---------------------------------------------------------------------------
+   Toast
+   ------------------------------------------------------------------------ */
+.toast-host { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 10px; z-index: 60; }
+.toast { display: flex; align-items: center; gap: 10px; background: var(--forest-800); color: var(--white); padding: 12px 16px; border-radius: 11px; box-shadow: var(--shadow-md); font-size: 0.9rem; transform: translateY(12px); opacity: 0; transition: all 0.28s; max-width: 320px; }
+.toast svg { width: 18px; height: 18px; flex: none; }
+.toast.is-visible { transform: translateY(0); opacity: 1; }
+.toast-success { background: var(--forest-700); }
+.toast-error { background: var(--red); }
+
+/* ---------------------------------------------------------------------------
+   Empty / error / skeleton states
+   ------------------------------------------------------------------------ */
+.empty-state { text-align: center; padding: 56px 20px; color: var(--ink-500); }
+.empty-icon { width: 54px; height: 54px; margin: 0 auto 14px; border-radius: 50%; background: var(--cream-100); color: var(--forest-500); display: grid; place-items: center; }
+.empty-icon svg { width: 26px; height: 26px; }
+.empty-state h3 { color: var(--ink-700); margin: 0 0 6px; }
+.skeleton-row .s-line { height: 14px; border-radius: 6px; background: linear-gradient(90deg, var(--cream-100), var(--cream-200), var(--cream-100)); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ---------------------------------------------------------------------------
+   Forms (New / Update)
+   ------------------------------------------------------------------------ */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 22px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field.full { grid-column: 1 / -1; }
+.field label { font-size: 0.86rem; font-weight: 600; color: var(--ink-700); }
+.field label .req { color: var(--red); margin-left: 2px; }
+.field input, .field select, .field textarea {
+  padding: 10px 13px; border: 1px solid var(--line); border-radius: 9px; font-size: 0.92rem; font-family: var(--sans);
+  background: var(--white); color: var(--ink-900); transition: border 0.16s, box-shadow 0.16s;
+}
+.field textarea { resize: vertical; min-height: 96px; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--forest-400); box-shadow: 0 0 0 3px rgba(90, 169, 126, 0.18); }
+.field .hint { font-size: 0.78rem; color: var(--ink-300); }
+.field.invalid input, .field.invalid select, .field.invalid textarea { border-color: var(--red); background: var(--red-bg); }
+.field .err-msg { font-size: 0.78rem; color: var(--red); min-height: 1em; }
+
+.switch-row { display: flex; align-items: center; gap: 10px; }
+.switch { position: relative; width: 46px; height: 26px; flex: none; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch .slider { position: absolute; inset: 0; background: var(--ink-300); border-radius: 999px; cursor: pointer; transition: 0.2s; }
+.switch .slider::before { content: ''; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: 0.2s; }
+.switch input:checked + .slider { background: var(--forest-500); }
+.switch input:checked + .slider::before { transform: translateX(20px); }
+
+.form-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: 26px 28px; margin-bottom: 22px; }
+.form-card h2 { font-size: 1.15rem; margin: 0 0 4px; }
+.form-card .section-note { color: var(--ink-500); font-size: 0.86rem; margin: 0 0 18px; }
+.form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px; }
+
+/* ---------------------------------------------------------------------------
+   Registration panel (Update page)
+   ------------------------------------------------------------------------ */
+.regs-table { margin-top: 8px; }
+.regs-table table.data tbody td { font-size: 0.86rem; }
+
+/* ---------------------------------------------------------------------------
+   Responsive
+   ------------------------------------------------------------------------ */
+@media (max-width: 900px) {
+  #admin-layout { grid-template-columns: 1fr; }
+  .admin-sidebar { display: none; }
+  #admin-layout.sidebar-open .admin-sidebar {
+    display: flex; position: fixed; inset: 0 30% 0 0; z-index: 50; box-shadow: var(--shadow-md);
+  }
+  .admin-topbar {
+    display: flex; align-items: center; gap: 12px; padding: 14px 18px; background: var(--forest-900); color: var(--white);
+    position: sticky; top: 0; z-index: 40;
+  }
+  .admin-topbar .menu-btn { background: transparent; border: none; color: var(--white); cursor: pointer; display: inline-flex; }
+  .admin-topbar .menu-btn svg { width: 24px; height: 24px; }
+  .admin-main { padding: 22px 18px 48px; }
+  .form-grid { grid-template-columns: 1fr; }
+  table.data thead { display: none; }
+  table.data, table.data tbody, table.data tr, table.data td { display: block; width: 100%; }
+  table.data tbody tr { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 12px; padding: 6px 4px; }
+  table.data tbody td { border: none; display: flex; justify-content: space-between; gap: 12px; padding: 8px 12px; }
+  table.data tbody td::before { content: attr(data-label); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-300); font-weight: 600; }
+  .cell-actions { justify-content: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}

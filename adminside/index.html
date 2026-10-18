@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All events · Admin Console · Zhengzhou Charity</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Mobile top bar -->
+  <header class="admin-topbar">
+    <button class="menu-btn" id="sidebar-toggle" type="button" aria-label="Open menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <strong>Admin Console</strong>
+  </header>
+
+  <div id="admin-layout">
+    <aside class="admin-sidebar">
+      <nav id="sidebar-nav" aria-label="Admin navigation"></nav>
+    </aside>
+
+    <main class="admin-main">
+      <div class="page-head">
+        <div>
+          <h1>All events</h1>
+          <p class="subtitle">Manage every charity event — active, past and suspended — in one place.</p>
+        </div>
+        <a class="btn btn-primary" href="new.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Add event
+        </a>
+      </div>
+
+      <div id="alert-host"></div>
+
+      <section class="stat-grid" id="stat-grid" aria-label="Event summary"></section>
+
+      <div class="toolbar">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+          <input type="search" id="search" placeholder="Search by name, location or organisation…" autocomplete="off" />
+        </div>
+        <select class="filter" id="status-filter">
+          <option value="all">All statuses</option>
+          <option value="upcoming">Active</option>
+          <option value="past">Past</option>
+          <option value="suspended">Suspended</option>
+        </select>
+      </div>
+
+      <div class="table-card">
+        <table class="data">
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Registrations</th>
+              <th class="cell-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="events-body"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/list.js"></script>
+</body>
+</html>

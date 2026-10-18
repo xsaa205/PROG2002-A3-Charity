@@ -20,9 +20,9 @@ The system consists of two websites that share one RESTful API and one MySQL dat
 | **1** | **Database improvements** — registration table, geo-coordinates, sample data       | **Completed** |
 | **2** | **RESTful API improvements** — full C.R.U.D. for events, registrations, 409 rule   | **Completed** |
 | **3** | **Client-side website** — registration page, live guest list, weather API          | **Completed** |
-| **4** | **Admin-side website** — event and category management                            | Not started   |
+| **4** | **Admin-side website** — event management (list / new / update / delete)           | **Completed** |
 
-_This README documents Parts 1–3 (database, RESTful API and the client-side website)._
+_This README documents Parts 1–4 (database, RESTful API, the client-side website and the admin-side website)._
 
 ---
 
@@ -53,7 +53,8 @@ charityevents-a3/
 │   └── routes/
 │       ├── events.js             # /api/events/* endpoints (GET, POST, PUT, DELETE)
 │       ├── registrations.js      # /api/registrations endpoints
-│       └── categories.js         # /api/categories endpoint
+│       ├── categories.js         # /api/categories endpoint
+│       └── organisations.js      # /api/organisations endpoint (admin form dropdown)
 ├── clientside/                   # Public website (HTML + vanilla JS)
 │   ├── index.html                # Home: hero, impact counters, event grid
 │   ├── search.html               # Search: date / district / category filters
@@ -67,6 +68,16 @@ charityevents-a3/
 │       ├── search.js             # Search + filter chips + shareable URL
 │       ├── event.js              # Event detail, guest list, Open-Meteo forecast
 │       └── registration.js       # Form validation, POST, 201/409/400 handling
+├── adminside/                    # Admin console (HTML + vanilla JS) — NEW in A3 (Part 4)
+│   ├── index.html                # List: all events (Active/Past/Suspended) + stats + delete
+│   ├── new.html                  # New event form (POST /api/events)
+│   ├── edit.html                 # Edit event form (PUT /api/events/:id) + registrations panel
+│   ├── css/style.css             # Admin design system (forest-green dashboard)
+│   └── js/
+│       ├── config.js             # API base URL (single place to change on deploy)
+│       ├── common.js             # fetch wrapper, sidebar nav, badges, toast, formatters
+│       ├── list.js               # List page: load, filter, delete (409 guard)
+│       └── form.js               # New/Edit shared logic: dropdowns, validate, submit
 ├── database/
 │   └── charityevents_a3.sql      # Complete schema + data (single SQL file)
 └── docs/
@@ -183,6 +194,7 @@ validated on the server before it reaches MySQL.
 | 11 | `POST`  | `/api/registrations`              | Create a registration                                           |
 | 12 | `DELETE` | `/api/registrations/:id`         | Delete a registration (cancellation / test clean-up)            |
 | 13 | `GET`   | `/api/categories`                 | List event categories                                           |
+| 14 | `GET`   | `/api/organisations`              | List organisations (admin "New/Edit" form dropdown)             |
 
 ---
 
@@ -509,6 +521,18 @@ Status codes: `200` · `400` · `404` · `500`
 
 ---
 
+### 14. `GET /api/organisations`
+
+Read-only list of the charities that host events. Used to populate the organisation
+dropdown on the admin **New** and **Edit** forms (the API validates that `org_id`
+exists before it will create or update an event).
+
+```json
+{ "count": 3, "data": [ { "org_id": 1, "name": "Zhengzhou Lvcheng Charity Foundation", "mission": "..." } ] }
+```
+
+---
+
 ### API-level behaviour
 
 - **Unsupported verb** on a known resource returns `405 Method Not Allowed` with an `Allow` header
@@ -643,6 +667,68 @@ using the `latitude` / `longitude` columns added in Part 1.
 - Sticky booking/summary panels on desktop; single-column layout on phones; labelled form controls,
   visible focus rings, `aria-live` result counts and `prefers-reduced-motion` support.
 
+---
+
+## Admin-Side Website (Part 4)
+
+A dedicated staff console for managing charity events through the full C.R.U.D. cycle. It is built
+with the same technologies as the public site — **HTML, JavaScript, DOM and Promises** — no framework,
+and authentication is intentionally not required (the brief says to assume this). The admin site shares
+the public site's forest-green + cream visual language but is presented as an internal dashboard
+(sidebar navigation, dense tables, status badges).
+
+| Page             | Purpose                                                                     | API calls                                                        |
+| ---------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `index.html`     | List **all** events (Active / Past / Suspended) with summary stats + delete  | `GET /api/events`, `DELETE /api/events/:id`                        |
+| `new.html`       | Form to create a new event                                                  | `GET /api/categories`, `GET /api/organisations`, `POST /api/events` |
+| `edit.html?id=N` | Form to edit an event + view its registrations                             | `GET /api/events/:id`, `PUT /api/events/:id`                      |
+
+### Requirement mapping (Brief §4)
+
+| Requirement in the brief                                                       | Where it is implemented                                                                 |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| List **all** events regardless of status, retrieved via the API                | `js/list.js` → `GET /api/events` (default `status=all`, returns Active+Past+Suspended)  |
+| Key administrative details on each row                                          | name, organisation, category, date, status badge, registration count                     |
+| New event form with a Save button that calls the Part 2 endpoint              | `js/form.js` → `POST /api/events`                                                       |
+| Validation of required fields before sending                                  | `validate()` in `form.js` (inline errors + summary alert)                                |
+| Update form that also shows the event's registrations                        | `edit.html` + `renderRegistrations()` using `GET /api/events/:id` → `registrations[]`    |
+| Delete button next to each event that calls the endpoint                     | `js/list.js` → `DELETE /api/events/:id`                                                 |
+| Clear feedback when deletion is blocked by existing registrations             | `409` → alert "Cannot delete … it has N registration(s)"                                |
+| Navigation menu present on **all** pages                                      | `renderAdminSidebar()` injected into `#sidebar-nav` on every page                        |
+
+### Status codes handled
+
+| Response            | What the staff member sees                                                                 |
+| ------------------- | ------------------------------------------------------------------------------------------ |
+| `200 / 201`         | Toast "Event created / updated successfully." (new → redirected to the edit page)          |
+| `400 Validation`    | Inline field errors mapped back from the API `details[]`, plus a summary alert             |
+| `404 Not found`     | Error panel on the edit page ("Event not found")                                           |
+| `409 Conflict`      | Delete blocked → alert naming the registration count that prevents deletion                 |
+| Network / timeout   | Retry panel on the list, toast "Could not reach the server" on submit                      |
+
+### Form fields & validation
+
+The form mirrors the `events` table columns. Client-side validation guards the same rules the API
+enforces (`api/routes/events.js → assembleEvent()`):
+
+| Field             | Rule                                                                 |
+| ----------------- | -------------------------------------------------------------------- |
+| Organisation       | Required, must be a positive integer that exists in `organisations`    |
+| Category           | Required, must be a positive integer that exists in `categories`        |
+| Name               | Required, 1–200 characters                                            |
+| Event date         | Required, `YYYY-MM-DD`                                                |
+| Location           | Required, 1–150 characters                                            |
+| Start / End time   | Optional `HH:MM`; end must be later than start                        |
+| Ticket price / goal / raised | Optional number ≥ 0                                        |
+| Latitude / Longitude | Optional decimal (also powers the weather card)                    |
+| Is free / Suspended | 0/1 toggle                                                         |
+
+### Deploying the admin site
+
+`adminside/` is a **static** site. On cPanel upload it next to the public `clientside/` folder and set
+each page's API origin by editing `js/config.js` (or defining `window.APP_CONFIG.API_BASE` in an inline
+script). For a single-domain deployment, point it at the same-origin `/api` path served by the Node app.
+
 ### Pointing the website at the API
 
 `clientside/js/config.js` holds the only hard-coded address. Locally it resolves to
@@ -768,8 +854,9 @@ PROG2002 Assessment 3 — Group project (2 students).
 | Student | Student ID | GitHub | Responsible for |
 | ------- | ---------- | ------ | --------------- |
 | Yitong Wu (吴益同)   | 24832863 | `xsaa205` | Database and RESTful API (Parts 1–2), admin-side website (Part 4), deployment, video and final packaging |
-| Jiacheng Yang (杨佳程) | 24832986 | `Yjc891`  | Client-side website and the registration flow (Part 3), Open-Meteo weather integration, AngularJS version of the client site |
+| Jiacheng Yang (杨佳程) | 24832986 | `Yjc891`  | Client-side website and the registration flow (Part 3), Open-Meteo weather integration, design system |
 
 ---
 
-_Last updated: Parts 1–3 completed (database, RESTful API and the client-side website)._
+_Last updated: Parts 1–4 completed (database, RESTful API, client-side website and admin-side website).
+Deployment (Part 5) is the remaining step._

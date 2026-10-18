@@ -13,6 +13,7 @@ const cors = require('cors');
 const eventsRouter = require('./routes/events');
 const registrationsRouter = require('./routes/registrations');
 const categoriesRouter = require('./routes/categories');
+const organisationsRouter = require('./routes/organisations');
 
 const app = express();
 
@@ -73,6 +74,9 @@ app.get('/', (req, res) => {
       ],
       categories: [
         'GET    /api/categories'
+      ],
+      organisations: [
+        'GET    /api/organisations'
       ]
     }
   });
@@ -84,6 +88,7 @@ app.get('/', (req, res) => {
 app.use('/api/events', eventsRouter);
 app.use('/api/registrations', registrationsRouter);
 app.use('/api/categories', categoriesRouter);
+app.use('/api/organisations', organisationsRouter);
 
 // ----------------------------------------------------------------------------
 // 404 - unknown endpoint / 405 - known resource but unsupported method
@@ -98,7 +103,8 @@ const ROUTE_METHODS = [
   { pattern: /^\/api\/events\/\d+\/registrations\/?$/, methods: ['GET'] },
   { pattern: /^\/api\/registrations\/?$/, methods: ['GET', 'POST'] },
   { pattern: /^\/api\/registrations\/(\d+)\/?$/, methods: ['GET', 'DELETE'] },
-  { pattern: /^\/api\/categories\/?$/, methods: ['GET'] }
+  { pattern: /^\/api\/categories\/?$/, methods: ['GET'] },
+  { pattern: /^\/api\/organisations\/?$/, methods: ['GET'] }
 ];
 
 app.use((req, res) => {
