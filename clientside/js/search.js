@@ -23,6 +23,13 @@ const alertBox = document.getElementById('alert-container');
 const resultCountEl = document.getElementById('result-count');
 const activeFiltersEl = document.getElementById('active-filters');
 
+// The date control is a custom English field (see datepicker.js) — a native
+// <input type="date"> shows "yyyy/mm/日" on a Chinese-locale browser.
+const dateField = createDateField(dateInput, {
+  trigger: document.getElementById('date-open'),
+  popup: document.getElementById('date-pop')
+});
+
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
@@ -43,22 +50,25 @@ function bindEvents() {
     runSearch();
   });
 
-  clearBtn.addEventListener('click', function () {
-    searchForm.reset();
-    clearAlert(alertBox);
-    runSearch();
-  });
+  clearBtn.addEventListener('click', clearAllFilters);
 
   // Chips: clicking one removes that single filter.
   activeFiltersEl.addEventListener('click', function (event) {
     const chip = event.target.closest('[data-clear-filter]');
     if (!chip) return;
     const which = chip.getAttribute('data-clear-filter');
-    if (which === 'date') dateInput.value = '';
+    if (which === 'date') dateField.clear();
     if (which === 'location') locationInput.value = '';
     if (which === 'category') categorySelect.value = '';
     runSearch();
   });
+}
+
+/** Reset every filter, including the custom date field's internal state. */
+function clearAllFilters() {
+  searchForm.reset();
+  dateField.refresh();
+  runSearch();
 }
 
 async function loadCategories() {
@@ -82,7 +92,7 @@ async function loadCategories() {
 function applyFiltersFromUrl() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('date') && /^\d{4}-\d{2}-\d{2}$/.test(params.get('date'))) {
-    dateInput.value = params.get('date');
+    dateField.setValue(params.get('date'));
   }
   if (params.get('location')) locationInput.value = params.get('location').slice(0, 100);
   if (params.get('category') && /^\d+$/.test(params.get('category'))) {
@@ -104,14 +114,15 @@ function syncUrl(params) {
 async function runSearch() {
   clearAlert(alertBox);
 
-  const date = dateInput.value.trim();
+  // getValue() returns '' for an empty field and null for text that is not a
+  // real calendar date, which keeps the "type anything" field honest.
+  const date = dateField.getValue();
   const location = locationInput.value.trim();
   const category = categorySelect.value.trim();
 
-  // Client-side check before the request: a date field can only produce
-  // YYYY-MM-DD in modern browsers, but older ones can be typed into freely.
-  if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    showAlert(alertBox, 'error', 'Please enter the date as YYYY-MM-DD.');
+  if (date === null) {
+    showAlert(alertBox, 'error', 'Please enter the date as yyyy / mm / dd — for example 2026 / 11 / 08.');
+    dateInput.focus();
     return;
   }
 
@@ -146,10 +157,7 @@ async function runSearch() {
       });
       const emptyClear = document.getElementById('empty-clear');
       if (emptyClear) {
-        emptyClear.addEventListener('click', function () {
-          searchForm.reset();
-          runSearch();
-        });
+        emptyClear.addEventListener('click', clearAllFilters);
       }
       return;
     }

@@ -27,8 +27,12 @@
       <div class="filter-grid">
         <div class="field">
           <label for="filter-date">Date</label>
-          <input type="date" id="filter-date" name="date" autocomplete="off" />
-          <span class="field-hint">Leave empty for any date</span>
+          <div class="date-field">
+            <input type="text" id="filter-date" name="date" placeholder="yyyy / mm / dd" autocomplete="off" inputmode="numeric" maxlength="16" aria-describedby="filter-date-hint" />
+            <button type="button" class="date-open" id="date-open" aria-label="Open calendar" aria-haspopup="dialog" aria-expanded="false" aria-controls="date-pop"></button>
+            <div class="date-pop" id="date-pop" role="dialog" aria-label="Choose a date" hidden></div>
+          </div>
+          <span class="field-hint" id="filter-date-hint">Leave empty for any date</span>
         </div>
         <div class="field">
           <label for="filter-location">District or venue</label>
@@ -70,6 +74,7 @@
 
   <script src="js/config.js"></script>
   <script src="js/common.js"></script>
+  <script src="js/datepicker.js"></script>
   <script src="js/search.js"></script>
 </body>
 </html>

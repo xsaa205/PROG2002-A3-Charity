@@ -317,7 +317,7 @@ function renderSiteHeader(activePage) {
         '</ul>' +
       '</nav>' +
       '<div class="nav-actions">' +
-        '<a class="btn btn-primary btn-sm" href="search.html">Donate your time</a>' +
+        '<button class="btn btn-primary btn-sm" type="button" data-open-donate>Donate your time</button>' +
         '<button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-drawer" aria-label="Open menu">' +
           icon('menu') +
         '</button>' +
@@ -507,3 +507,174 @@ function getEventIdFromUrl() {
   const raw = params.get('eventId') || params.get('id');
   return raw && /^\d+$/.test(raw) ? raw : null;
 }
+
+/* ---------------------------------------------------------------------------
+   Donate modal — "Donate your time" opens a smooth popup on every page.
+   Replaces the old #how-it-works anchor jump (which felt abrupt and did
+   nothing on pages that lacked that anchor, e.g. search.html).
+   ------------------------------------------------------------------------ */
+function renderDonateModal() {
+  if (document.getElementById('donate-modal')) return;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'donate-modal';
+
+  overlay.innerHTML =
+    '<div class="modal" role="dialog" aria-modal="true" aria-labelledby="donate-modal-title">' +
+      '<button class="modal-close" type="button" aria-label="Close dialog" data-close-donate>' +
+        icon('close') +
+      '</button>' +
+      '<span class="eyebrow">Donate your time</span>' +
+      '<h2 id="donate-modal-title" class="section-title">From a free afternoon to real help</h2>' +
+      '<p class="modal-lead">Three small steps. Most events are free — all we need is your presence, not your wallet.</p>' +
+      '<div class="steps">' +
+        '<div class="step">' +
+          '<div class="step-index">01</div>' +
+          '<h3>Find a cause</h3>' +
+          '<p>Filter by date, district or category. Every listing shows the organiser, the address and the seats already taken.</p>' +
+        '</div>' +
+        '<div class="step">' +
+          '<div class="step-index">02</div>' +
+          '<h3>Reserve tickets</h3>' +
+          '<p>Choose how many tickets you need. Your name appears on the event\'s guest list straight away, sorted by the newest registration.</p>' +
+        '</div>' +
+        '<div class="step">' +
+          '<div class="step-index">03</div>' +
+          '<h3>Show up</h3>' +
+          '<p>Bring your confirmation reference. Free events need no payment; paid tickets are settled with the organiser on the day.</p>' +
+        '</div>' +
+      '</div>' +
+      '<div class="steps-cta"><a class="btn btn-primary" href="search.html">Browse events &amp; reserve your seat</a></div>' +
+    '</div>';
+
+  document.body.appendChild(overlay);
+
+  // Close on backdrop click or the X button (any element with data-close-donate).
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay || e.target.closest('[data-close-donate]')) {
+      closeDonateModal();
+    }
+  });
+}
+
+function openDonateModal() {
+  const overlay = document.getElementById('donate-modal');
+  if (!overlay) return;
+  overlay.classList.add('is-open');
+  document.body.style.overflow = 'hidden'; // lock background scroll while open
+}
+
+function closeDonateModal() {
+  const overlay = document.getElementById('donate-modal');
+  if (!overlay) return;
+  overlay.classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+
+// One global listener handles every [data-open-donate] trigger on any page.
+document.addEventListener('click', function (e) {
+  const trigger = e.target.closest('[data-open-donate]');
+  if (trigger) {
+    e.preventDefault();
+    renderDonateModal();
+    openDonateModal();
+  }
+});
+
+// Esc closes the modal from anywhere.
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') closeDonateModal();
+});
+
+/* ---------------------------------------------------------------------------
+   Page transitions
+   ----------------------------------------------------------------------------
+   Every page is a separate document, so the browser swaps them instantly — a
+   hard cut. This adds the missing half: intercept an internal link, fade the
+   current page out (CSS `.page-leaving`, ~200ms), then follow the link. The
+   next page fades back in through the entry animation in style.css.
+
+   Deliberately skipped: new-tab clicks, modifier keys and middle clicks,
+   downloads, mailto:/tel: links, external sites, and links that only change
+   the query string or hash (those do not repaint the page anyway).
+   ------------------------------------------------------------------------ */
+(function initPageTransitions() {
+  const root = document.documentElement;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const LEAVE_MS = 200;
+  let leaving = false;
+
+  function shouldTransition(link) {
+    if (!link || !link.getAttribute) return false;
+    if (link.target === '_blank' || link.hasAttribute('download')) return false;
+    if (link.hasAttribute('data-no-transition')) return false;
+
+    const href = link.getAttribute('href');
+    if (!href || href === '#' || href.charAt(0) === '#') return false;
+    if (/^(mailto|tel|javascript):/i.test(href)) return false;
+
+    let target;
+    try {
+      target = new URL(link.href, window.location.href);
+    } catch (_) {
+      return false;
+    }
+
+    // file:// pages report origin "null"; comparing paths is then enough.
+    if (target.origin !== window.location.origin && target.protocol !== 'file:') return false;
+    if (target.protocol !== 'http:' && target.protocol !== 'https:' && target.protocol !== 'file:') {
+      return false;
+    }
+    const samePath = target.pathname === window.location.pathname;
+    if (samePath && target.search === window.location.search) return false;
+    return true;
+  }
+
+  document.addEventListener('click', function (event) {
+    if (event.defaultPrevented || event.button !== 0) return;
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+    const link = event.target.closest('a[href]');
+    if (!shouldTransition(link)) return;
+
+    event.preventDefault();
+    if (leaving) {
+      window.location.href = link.href;
+      return;
+    }
+
+    leaving = true;
+    root.classList.add('page-leaving');
+    window.setTimeout(function () {
+      window.location.href = link.href;
+    }, LEAVE_MS);
+  });
+
+  // Warm the next document while the visitor hovers the link, so the 200ms
+  // fade-out is followed by an already-downloaded page instead of a white gap.
+  const prefetched = new Set();
+  document.addEventListener('pointerover', function (event) {
+    if (prefetched.size >= 8) return;
+    const link = event.target.closest('a[href]');
+    if (!shouldTransition(link)) return;
+    const url = link.href.split('#')[0];
+    if (prefetched.has(url)) return;
+    prefetched.add(url);
+    const tag = document.createElement('link');
+    tag.rel = 'prefetch';
+    tag.as = 'document';
+    tag.href = url;
+    document.head.appendChild(tag);
+  }, { passive: true });
+
+  // Back/forward can restore a page from the bfcache with the exit class still
+  // applied; drop it or the page would come back invisible.
+  window.addEventListener('pageshow', function (event) {
+    if (event.persisted || leaving) {
+      leaving = false;
+      root.classList.remove('page-leaving');
+    }
+  });
+})();

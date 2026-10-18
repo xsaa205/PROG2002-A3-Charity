@@ -520,139 +520,231 @@ button { cursor: pointer; }
 /* ---------------------------------------------------------------------------
    5. Home page
    ------------------------------------------------------------------------ */
+/* The hero is one deep, quiet field of colour: a warm glow high on the right,
+   a cooler one low on the left, and a whisper of film grain so the large dark
+   area reads as paper rather than as a flat fill. */
 .hero {
   position: relative;
   overflow: hidden;
-  background: var(--forest-900);
+  isolation: isolate;
   color: #F6F1E7;
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
   margin-bottom: var(--section-y);
+  background:
+    radial-gradient(1180px 700px at 88% -20%, rgba(199, 154, 75, 0.16), transparent 62%),
+    radial-gradient(900px 640px at 4% 114%, rgba(36, 97, 76, 0.34), transparent 66%),
+    linear-gradient(178deg, #12352A 0%, #0E2A22 54%, #0A231C 100%);
+  box-shadow: inset 0 1px 0 rgba(246, 241, 231, 0.07);
 }
-.hero::before,
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.09;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  mix-blend-mode: overlay;
+}
+/* One hairline of gold across the top edge — replaces the two blurred blobs. */
 .hero::after {
   content: "";
   position: absolute;
-  border-radius: 50%;
+  top: 0;
+  left: 50%;
+  width: min(70vw, 820px);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(199, 154, 75, 0.5), transparent);
   pointer-events: none;
-}
-.hero::before {
-  width: 720px; height: 720px;
-  right: -180px; top: -260px;
-  background: radial-gradient(circle at 30% 30%, rgba(199, 154, 75, 0.28), transparent 62%);
-}
-.hero::after {
-  width: 640px; height: 640px;
-  left: -220px; bottom: -380px;
-  background: radial-gradient(circle at 50% 50%, rgba(110, 143, 126, 0.30), transparent 66%);
 }
 
 .hero-inner {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  gap: clamp(32px, 5vw, 72px);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(32px, 5vw, 68px);
   align-items: center;
-  padding: clamp(56px, 8vw, 104px) 0 clamp(56px, 8vw, 96px);
+  padding: clamp(56px, 7.5vw, 96px) 0 clamp(44px, 5vw, 64px);
 }
 
+.hero-copy { max-width: 34rem; }
+
 .hero h1 {
-  color: #FBF8F2;
-  font-size: clamp(2.4rem, 5.4vw, 4.2rem);
-  line-height: 1.03;
-  letter-spacing: -0.03em;
-  margin-top: 20px;
+  color: #FCF9F3;
+  font-size: clamp(2.15rem, 3.9vw, 3.4rem);
+  line-height: 1.06;
+  letter-spacing: -0.032em;
+  margin-top: 22px;
+  text-wrap: balance;
 }
+/* Two deliberate lines instead of an accidental three-line rag. */
+.hero h1 .line { display: block; }
 .hero h1 em {
   font-style: italic;
-  color: #E4C488;
+  color: #E3C089;
+  letter-spacing: -0.02em;
 }
 .hero-lead {
-  margin-top: 22px;
-  max-width: 46ch;
-  color: rgba(246, 241, 231, 0.78);
-  font-size: 1.02rem;
+  margin-top: 24px;
+  max-width: 44ch;
+  color: rgba(246, 241, 231, 0.7);
+  font-size: 1rem;
+  line-height: 1.78;
 }
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 34px;
+  margin-top: 32px;
 }
+.hero-actions .btn { padding: 14px 28px; }
+.hero-actions .btn-light { box-shadow: 0 14px 30px -14px rgba(0, 0, 0, 0.6); }
 
 .hero-figure {
   position: relative;
+  width: 100%;
+  max-width: 420px;
+  justify-self: end;
+  margin: 0;
 }
 .hero-figure .frame {
   position: relative;
+  aspect-ratio: 4 / 5;
   border-radius: 26px;
   overflow: hidden;
-  aspect-ratio: 4 / 5;
   background: linear-gradient(150deg, #25513F, #12352A 60%, #0C211A);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid rgba(246, 241, 231, 0.14);
+  box-shadow: 0 46px 90px -46px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(246, 241, 231, 0.14);
 }
 .hero-figure .frame img {
-  width: 100%; height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  opacity: 0.92;
+  /* Tight emotional crop: the two faces carry the frame, not the street. */
+  transform: scale(1.9);
+  transform-origin: 51% 42%;
+  filter: saturate(0.94) contrast(1.04) brightness(0.95) sepia(0.08);
 }
 .hero-figure .frame::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(14, 42, 34, 0) 40%, rgba(10, 32, 25, 0.72) 100%);
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(12, 36, 29, 0.06) 0%,
+    rgba(10, 30, 24, 0.14) 44%,
+    rgba(8, 24, 19, 0.74) 100%
+  );
+}
+/* Hairline "mat" inside the photograph — a quiet editorial detail. */
+.hero-figure .frame::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  z-index: 2;
+  border: 1px solid rgba(246, 241, 231, 0.16);
+  border-radius: 19px;
+  pointer-events: none;
 }
 
+/* Frosted glass over the photograph: the note belongs to the image instead of
+   hanging off it into the text column. */
 .hero-note {
   position: absolute;
-  left: -22px;
-  bottom: 26px;
-  right: 22px;
-  background: rgba(250, 247, 240, 0.96);
-  color: var(--text);
-  border-radius: 18px;
-  padding: 16px 18px;
-  box-shadow: var(--shadow-md);
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  z-index: 3;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 13px;
+  padding: 13px 15px;
+  border-radius: 16px;
+  border: 1px solid rgba(246, 241, 231, 0.16);
+  background: linear-gradient(180deg, rgba(14, 40, 32, 0.7), rgba(8, 25, 20, 0.88));
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 22px 44px -26px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: #F7F2E9;
 }
 .hero-note .note-icon {
-  width: 40px; height: 40px;
-  border-radius: 12px;
-  background: var(--gold-soft);
-  color: #8A6524;
+  width: 38px;
+  height: 38px;
+  flex: none;
   display: grid;
   place-items: center;
-  flex: none;
+  border-radius: 11px;
+  color: #E7C88E;
+  background: rgba(199, 154, 75, 0.16);
+  border: 1px solid rgba(199, 154, 75, 0.3);
 }
-.hero-note .note-icon svg { width: 20px; height: 20px; }
-.hero-note strong { display: block; font-size: 0.92rem; }
-.hero-note span { font-size: 0.78rem; color: var(--text-muted); }
+.hero-note .note-icon svg { width: 19px; height: 19px; }
+.hero-note strong {
+  display: block;
+  font-size: 0.87rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #FCF9F3;
+}
+.hero-note strong + span {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.745rem;
+  line-height: 1.45;
+  color: rgba(246, 241, 231, 0.62);
+}
 
+/* Stats: labels above the figures, left aligned, no table-like dividers. */
 .stats-strip {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-top: 1px solid rgba(246, 241, 231, 0.16);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(18px, 3.4vw, 48px);
+  padding-top: clamp(22px, 3vw, 30px);
+  padding-bottom: clamp(28px, 3.6vw, 42px);
+  border-top: 1px solid rgba(246, 241, 231, 0.13);
+}
+/* A single gold tick at the left cap of the rule instead of three dividers. */
+.stats-strip::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 78px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(199, 154, 75, 0.95), rgba(199, 154, 75, 0));
 }
 .stat {
-  padding: 26px 4px 30px;
-  text-align: center;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  gap: 9px;
 }
-.stat + .stat { border-left: 1px solid rgba(246, 241, 231, 0.16); }
 .stat-value {
   font-family: var(--font-display);
-  font-size: clamp(1.6rem, 3vw, 2.3rem);
-  color: #FBF8F2;
-  line-height: 1.1;
+  font-size: clamp(1.55rem, 2.5vw, 2.05rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: #FCF9F3;
+  font-variant-numeric: tabular-nums;
 }
 .stat-label {
-  margin-top: 6px;
-  font-size: 0.7rem;
-  letter-spacing: 0.18em;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(246, 241, 231, 0.62);
+  color: rgba(246, 241, 231, 0.52);
+}
+.stat-label::before {
+  content: "";
+  width: 14px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.85;
 }
 
 /* Event grid & card ------------------------------------------------------- */
@@ -660,6 +752,97 @@ button { cursor: pointer; }
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 26px;
+}
+
+/* Coverflow carousel (home page upcoming events) -------------------------
+   Centre card large + colour + deep shadow; side cards smaller + greyscale
+   + dimmed. Drag / wheel / arrows move it, release snaps to the nearest. */
+.cf { position: relative; }
+
+.cf-loading {
+  padding: 40px 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.cf-stage {
+  overflow: hidden;
+  padding: 24px 0 38px;
+  cursor: grab;
+  touch-action: pan-y;
+  outline: none;
+  /* Cards dissolve at the edges instead of being sliced by the container. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 34px, #000 calc(100% - 34px), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 34px, #000 calc(100% - 34px), transparent 100%);
+}
+.cf.is-dragging .cf-stage { cursor: grabbing; }
+.cf-stage:focus-visible {
+  outline: 2px solid var(--sage-300);
+  outline-offset: 4px;
+  border-radius: var(--radius-lg);
+}
+
+.cf-track {
+  display: flex;
+  align-items: stretch;
+  gap: 30px;
+  will-change: transform;
+  transition: transform 0.55s var(--ease);
+}
+.cf.is-dragging .cf-track { transition: none; }
+
+.cf-item {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  transform-origin: center center;
+  will-change: transform, filter;
+  transition: transform 0.55s var(--ease), filter 0.55s var(--ease);
+}
+.cf.is-dragging .cf-item { transition: none; }
+
+.cf-item .card {
+  width: 100%;
+  height: 100%;
+  box-shadow: var(--cf-shadow, var(--shadow-xs));
+  transition: box-shadow 0.5s var(--ease);
+}
+.cf.is-dragging .cf-item .card { transition: none; }
+/* keep the coverflow silhouette steady (no extra hover shift inside it) */
+.cf-item .card:hover {
+  transform: none;
+  box-shadow: var(--cf-shadow, var(--shadow-md));
+}
+.cf-item .card img { -webkit-user-drag: none; user-select: none; }
+
+.cf-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 200;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--forest-800);
+  box-shadow: 0 6px 16px rgba(15, 36, 28, 0.14);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background 0.2s var(--ease), opacity 0.2s var(--ease),
+    transform 0.2s var(--ease);
+}
+.cf-arrow:hover:not(:disabled) { background: var(--sage-100); transform: translateY(-50%) scale(1.05); }
+.cf-arrow:disabled { opacity: 0.32; cursor: not-allowed; }
+.cf-arrow svg { width: 22px; height: 22px; }
+.cf-prev { left: 2px; }
+.cf-next { right: 2px; }
+
+@media (max-width: 640px) {
+  .cf-stage { padding: 16px 0 30px; }
+  .cf-arrow { width: 40px; height: 40px; }
+  .cf-arrow svg { width: 19px; height: 19px; }
 }
 
 .card-media {
@@ -773,6 +956,11 @@ button { cursor: pointer; }
 .step {
   padding-top: 22px;
   border-top: 1px solid var(--line-strong);
+  transition: transform 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.step:hover {
+  transform: translateY(-4px);
+  border-top-color: var(--forest-600);
 }
 .step-index {
   font-family: var(--font-mono);
@@ -782,6 +970,78 @@ button { cursor: pointer; }
 }
 .step h3 { font-size: 1.14rem; margin: 10px 0 8px; }
 .step p { font-size: 0.88rem; color: var(--text-muted); }
+
+/* ---------------------------------------------------------------------------
+   7b. Donate modal — smooth popup for the "Donate your time" action
+   ------------------------------------------------------------------------ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 36, 28, 0.55);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease), visibility 0.3s var(--ease);
+}
+.modal-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.modal {
+  position: relative;
+  width: min(720px, 100%);
+  max-height: 88vh;
+  overflow-y: auto;
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 40px 38px 34px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.32);
+  transform: translateY(24px) scale(0.98);
+  transition: transform 0.35s var(--ease);
+}
+.modal-overlay.is-open .modal {
+  transform: translateY(0) scale(1);
+}
+.modal .eyebrow { display: block; margin-bottom: 8px; }
+.modal .section-title { margin-bottom: 10px; }
+.modal-lead {
+  margin: 0 0 26px;
+  color: var(--text-muted);
+  font-size: 0.96rem;
+  max-width: 52ch;
+}
+.modal .steps { margin-top: 0; }
+.modal .steps-cta { margin-top: 28px; }
+.modal .steps-cta .btn { width: 100%; }
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--forest-800);
+  cursor: pointer;
+  transition: background 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.modal-close:hover { background: var(--sage-100); border-color: var(--sage-300); }
+.modal-close svg { width: 18px; height: 18px; }
+
+@media (max-width: 640px) {
+  .modal { padding: 32px 22px 26px; border-radius: 14px; }
+}
 
 /* ---------------------------------------------------------------------------
    6. Search page
@@ -847,6 +1107,131 @@ button { cursor: pointer; }
   background-position: right 14px center;
   padding-right: 38px;
 }
+
+/* Date field -----------------------------------------------------------------
+   Native date inputs print their placeholder in the browser's own language
+   ("yyyy/mm/日"), so this field is a text input plus our own English calendar.
+   See js/datepicker.js. */
+.date-field { position: relative; display: flex; }
+.date-field input { padding-right: 42px; letter-spacing: 0.01em; }
+.date-field .date-open {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--sage-500);
+  transition: color 0.2s var(--ease), background-color 0.2s var(--ease);
+}
+.date-field .date-open:hover { color: var(--forest-700); background: var(--paper-2); }
+.date-field .date-open svg { width: 17px; height: 17px; }
+.date-field .date-open[aria-expanded="true"] { color: var(--forest-700); background: var(--paper-2); }
+
+.date-pop {
+  position: absolute;
+  z-index: 70;
+  top: calc(100% + 10px);
+  left: 0;
+  width: min(312px, calc(100vw - 44px));
+  padding: 14px 14px 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 28px 60px -28px rgba(14, 42, 34, 0.42), var(--shadow-xs);
+  transform-origin: 24px -8px;
+  animation: date-pop-in 0.2s var(--ease);
+}
+.date-pop.is-up {
+  top: auto;
+  bottom: calc(100% + 10px);
+  transform-origin: 24px calc(100% + 8px);
+}
+.date-pop[hidden] { display: none; }
+@keyframes date-pop-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+.date-pop-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.date-pop-title {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.date-nav { display: flex; gap: 6px; }
+.date-nav-btn {
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-muted);
+  transition: border-color 0.18s var(--ease), color 0.18s var(--ease),
+    background-color 0.18s var(--ease);
+}
+.date-nav-btn:hover { border-color: var(--line-strong); color: var(--forest-700); background: var(--paper); }
+.date-nav-btn svg { width: 14px; height: 14px; }
+
+.date-week,
+.date-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+.date-week { margin: 11px 0 3px; }
+.date-week span {
+  text-align: center;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.date-grid { gap: 2px; }
+.date-day {
+  height: 31px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font-size: 0.84rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  transition: background-color 0.16s var(--ease), color 0.16s var(--ease);
+}
+.date-day:hover { background: var(--paper-2); }
+.date-day.is-out { color: var(--text-faint); opacity: 0.55; }
+.date-day.is-today { box-shadow: inset 0 0 0 1px var(--line-strong); }
+.date-day.is-selected,
+.date-day.is-selected:hover { background: var(--forest-800); color: #FBF8F2; font-weight: 600; }
+.date-day:focus-visible { outline: 2px solid var(--forest-600); outline-offset: -2px; }
+
+.date-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 9px;
+  padding-top: 9px;
+  border-top: 1px solid var(--line);
+}
+.date-foot button {
+  padding: 4px 7px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  font-size: 0.77rem;
+  font-weight: 600;
+  color: var(--forest-700);
+  transition: background-color 0.18s var(--ease), color 0.18s var(--ease);
+}
+.date-foot button:hover { background: var(--paper-2); color: var(--clay); }
 
 .results-bar {
   display: flex;
@@ -1463,8 +1848,6 @@ button { cursor: pointer; }
    10. Responsive
    ------------------------------------------------------------------------ */
 @media (max-width: 1040px) {
-  .hero-inner { grid-template-columns: 1fr; }
-  .hero-figure { display: none; }
   .detail-grid,
   .reg-layout { grid-template-columns: 1fr; }
   .booking-card,
@@ -1472,6 +1855,13 @@ button { cursor: pointer; }
   .filter-grid { grid-template-columns: 1fr 1fr; }
   .filter-actions { grid-column: 1 / -1; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* The hero only stacks once two columns genuinely stop fitting. */
+@media (max-width: 920px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 36px; }
+  .hero-copy { max-width: 40rem; }
+  .hero-figure { justify-self: start; max-width: 380px; }
 }
 
 @media (max-width: 860px) {
@@ -1489,9 +1879,22 @@ button { cursor: pointer; }
 @media (max-width: 640px) {
   body { font-size: 15px; }
   .hero { border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
-  .stats-strip { grid-template-columns: 1fr; }
-  .stat { padding: 18px 4px; }
-  .stat + .stat { border-left: 0; border-top: 1px solid rgba(246, 241, 231, 0.16); }
+  .hero-figure { max-width: 100%; }
+  .hero-figure .frame { aspect-ratio: 1 / 1; }
+  .hero-figure .frame::before { inset: 7px; }
+  .hero-note { left: 11px; right: 11px; bottom: 11px; gap: 10px; padding: 11px 12px; }
+  .hero-note .note-icon { width: 34px; height: 34px; border-radius: 10px; }
+  .hero-note strong { font-size: 0.82rem; }
+  .hero-note strong + span { font-size: 0.71rem; }
+  .hero-actions .btn { padding: 13px 22px; }
+  .stats-strip { grid-template-columns: 1fr; gap: 14px; }
+  .stat {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .stat + .stat { padding-top: 13px; border-top: 1px solid rgba(246, 241, 231, 0.08); }
   .card-grid { grid-template-columns: 1fr; }
   .filter-grid { grid-template-columns: 1fr; }
   .form-row { grid-template-columns: 1fr; }
@@ -1507,6 +1910,22 @@ button { cursor: pointer; }
 /* ---------------------------------------------------------------------------
    11. Motion preferences
    ------------------------------------------------------------------------ */
+/* Reveal-on-scroll: elements fade in and lift as they enter the viewport. */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+/* Staggered hero entrances so copy, photo and stats arrive in sequence. */
+.hero-copy.reveal { transition-delay: 0.02s; }
+.hero-figure.reveal { transition-delay: 0.14s; }
+.stats-strip.reveal { transition-delay: 0.26s; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *,
@@ -1516,4 +1935,49 @@ button { cursor: pointer; }
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  /* Never leave content hidden when motion is suppressed. */
+  .reveal,
+  .reveal.is-visible {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   12. Page transitions
+   ------------------------------------------------------------------------ */
+/*
+   Moving between pages used to be an instant swap, which reads as a hard cut.
+   Now the outgoing page fades and lifts slightly, and the incoming page fades
+   in with a short rise, so navigation feels continuous.
+
+   * Enter is pure CSS: every page is painted with the animation below.
+   * Exit is driven by common.js, which adds `.page-leaving` to <html>, waits
+   *   for the 200ms fade and only then follows the link.
+   Both animations are intentionally declared without fill-mode, so the exit
+   state is never outranked by a finished entry animation.
+*/
+@keyframes page-enter-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes page-enter-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body { animation: page-enter-fade 0.45s var(--ease); }
+  main { animation: page-enter-rise 0.6s var(--ease); }
+}
+
+html.page-leaving body {
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+}
+html.page-leaving main {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease-out, transform 0.24s var(--ease);
 }

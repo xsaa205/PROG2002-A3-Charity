@@ -178,7 +178,7 @@ VALUES
  'Jinshui District', 'Grand Ballroom, Hilton Zhengzhou Hotel',
  34.778000, 113.686000,
  250.00, 0, 200000.00, 87000.00,
- 'https://picsum.photos/seed/zzgala/800/500', 0),
+ 'https://picsum.photos/id/1060/800/500', 0),
 
 (3, 2, 3, 'Love Artwork Charity Auction',
  'Bid on fine art donated by local and international artists.',

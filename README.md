@@ -63,8 +63,11 @@ charityevents-a3/
 │   ├── css/style.css             # One design system for all four pages
 │   └── js/
 │       ├── config.js             # API base URL (single place to change on deploy)
-│       ├── common.js             # fetch wrapper, formatters, header/footer, card template
-│       ├── index.js              # Home page logic
+│       ├── common.js             # fetch wrapper, formatters, header/footer, card template,
+│       │                        #   donate modal, page-transition + hover prefetch
+│       ├── index.js              # Home page logic (coverflow, reveal, count-up)
+│       ├── coverflow.js          # Home event carousel (drag / wheel / arrows)
+│       ├── datepicker.js         # English date field + calendar popup (search filter)
 │       ├── search.js             # Search + filter chips + shareable URL
 │       ├── event.js              # Event detail, guest list, Open-Meteo forecast
 │       └── registration.js       # Form validation, POST, 201/409/400 handling

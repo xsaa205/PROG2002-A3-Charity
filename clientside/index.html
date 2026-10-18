@@ -7,6 +7,9 @@
   <meta name="description" content="Zhengzhou Charity connects volunteers and donors with local causes. Browse upcoming charity events, read the guest list in real time and register for the ones you love." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%2314382D'/%3E%3Cpath d='M12 19s-6-3.7-6-8a3.8 3.8 0 0 1 6-2.7A3.8 3.8 0 0 1 18 11c0 4.3-6 8-6 8Z' fill='%23FAF7F0'/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="css/style.css" />
+  <noscript>
+    <style>.reveal { opacity: 1 !important; transform: none !important; }</style>
+  </noscript>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
@@ -17,29 +20,32 @@
     <section class="hero on-dark" aria-labelledby="hero-title">
       <div class="container">
         <div class="hero-inner">
-          <div>
+          <div class="hero-copy reveal">
             <span class="eyebrow">Green City · Warm Hearts</span>
-            <h1 id="hero-title">Small acts,<br /><em>a warmer</em> Zhengzhou.</h1>
+            <h1 id="hero-title">
+              <span class="line">Small acts,</span>
+              <span class="line"><em>a warmer</em> Zhengzhou.</span>
+            </h1>
             <p class="hero-lead">
               Charity should feel close to home. We gather the city's food drives, reading
               corners and winter appeals in one place — so you can find a cause, reserve a
               seat, and see who is showing up beside you.
             </p>
             <div class="hero-actions">
-              <a class="btn btn-light" href="search.html">
-                Find an event
+              <button class="btn btn-light" type="button" data-open-donate>
+                Donate your time
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
-              </a>
-              <a class="btn btn-outline-light" href="#how-it-works">How it works</a>
+              </button>
+              <a class="btn btn-outline-light" href="search.html">Find an event</a>
             </div>
           </div>
 
-          <figure class="hero-figure">
+          <figure class="hero-figure reveal">
             <div class="frame">
               <img
-                src="https://picsum.photos/id/823/900/1120"
-                alt="A young volunteer out in the city, camera in hand"
-                width="900" height="1120"
+                src="https://picsum.photos/id/838/1200/1500"
+                alt="A parent holding a child close on a winter street"
+                width="1200" height="1500"
                 onerror="this.style.display='none'"
               />
             </div>
@@ -55,7 +61,7 @@
           </figure>
         </div>
 
-        <div class="stats-strip" aria-label="Community impact">
+        <div class="stats-strip reveal" aria-label="Community impact">
           <div class="stat">
             <div class="stat-value" id="stat-upcoming">—</div>
             <div class="stat-label">Upcoming events</div>
@@ -74,7 +80,7 @@
 
     <!-- Upcoming --------------------------------------------------------- -->
     <section class="container" aria-labelledby="upcoming-title">
-      <div class="section-head">
+      <div class="section-head reveal">
         <div>
           <span class="eyebrow">What is on</span>
           <h2 class="section-title" id="upcoming-title">Upcoming &amp; current events</h2>
@@ -87,10 +93,8 @@
       </div>
 
       <div id="alert-container"></div>
-      <div id="events-container" class="card-grid" aria-live="polite">
-        <div class="skeleton-card"><div class="skeleton s-media"></div><div class="skeleton s-line short"></div><div class="skeleton s-line"></div></div>
-        <div class="skeleton-card"><div class="skeleton s-media"></div><div class="skeleton s-line short"></div><div class="skeleton s-line"></div></div>
-        <div class="skeleton-card"><div class="skeleton s-media"></div><div class="skeleton s-line short"></div><div class="skeleton s-line"></div></div>
+      <div id="events-container" aria-live="polite">
+        <p class="cf-loading">Loading events…</p>
       </div>
     </section>
 
@@ -106,35 +110,13 @@
       <div id="past-container" class="card-grid"></div>
     </section>
 
-    <!-- How it works ----------------------------------------------------- -->
-    <section class="container" id="how-it-works">
-      <div class="band">
-        <span class="eyebrow">Three steps</span>
-        <h2 class="section-title">From a free afternoon to real help</h2>
-        <div class="steps">
-          <div class="step">
-            <div class="step-index">01</div>
-            <h3>Find a cause</h3>
-            <p>Filter by date, district or category. Every listing shows the organiser, the address and the seats already taken.</p>
-          </div>
-          <div class="step">
-            <div class="step-index">02</div>
-            <h3>Reserve tickets</h3>
-            <p>Choose how many tickets you need. Your name appears on the event's guest list straight away, sorted by the newest registration.</p>
-          </div>
-          <div class="step">
-            <div class="step-index">03</div>
-            <h3>Show up</h3>
-            <p>Bring your confirmation reference. Free events need no payment; paid tickets are settled with the organiser on the day.</p>
-          </div>
-        </div>
-      </div>
-    </section>
+    <!-- "How it works" content now lives in the Donate-your-time modal
+         (clientside/js/common.js) so it is shown in exactly one place. -->
 
     <!-- Contact ---------------------------------------------------------- -->
     <section class="container" id="contact" style="margin-top: var(--section-y);">
-      <div class="band">
-        <div class="section-head" style="margin-bottom: 0;">
+      <div class="band reveal">
+        <div class="section-head reveal" style="margin-bottom: 0;">
           <div>
             <span class="eyebrow">Talk to us</span>
             <h2 class="section-title">Running a cause of your own?</h2>
@@ -155,6 +137,7 @@
 
   <script src="js/config.js"></script>
   <script src="js/common.js"></script>
+  <script src="js/coverflow.js"></script>
   <script src="js/index.js"></script>
 </body>
 </html>
