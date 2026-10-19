@@ -5,11 +5,26 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:3000" },
-    { "key": "eventId", "value": "1" },
-    { "key": "newEventId", "value": "" },
-    { "key": "registrationId", "value": "" },
-    { "key": "testEmail", "value": "postman.tester@example.com" }
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "eventId",
+      "value": "1"
+    },
+    {
+      "key": "newEventId",
+      "value": ""
+    },
+    {
+      "key": "registrationId",
+      "value": ""
+    },
+    {
+      "key": "testEmail",
+      "value": "postman.tester@example.com"
+    }
   ],
   "item": [
     {
@@ -249,11 +264,20 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"org_id\": 1,\n  \"category_id\": 1,\n  \"name\": \"Postman Test Charity Walk\",\n  \"short_description\": \"Created from the Postman collection.\",\n  \"full_description\": \"Temporary event used to verify the POST endpoint.\",\n  \"event_date\": \"2027-08-15\",\n  \"start_time\": \"09:00\",\n  \"end_time\": \"12:00\",\n  \"location\": \"Zhengzhou People's Park\",\n  \"address\": \"No. 1 Jinshui Road, Zhengzhou\",\n  \"latitude\": 34.7621,\n  \"longitude\": 113.6654,\n  \"ticket_price\": 20,\n  \"is_free\": 0,\n  \"goal_amount\": 10000,\n  \"raised_amount\": 0,\n  \"image_url\": \"https://picsum.photos/seed/postman/800/500\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/events"
           }
@@ -276,11 +300,20 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"org_id\": 1\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/events"
           }
@@ -300,11 +333,20 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{ \"name\": ",
-              "options": { "raw": { "language": "json" } }
+              "raw": "{\"name\": bad json",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/events"
           }
@@ -335,11 +377,20 @@
           ],
           "request": {
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Postman Test Charity Walk (Updated)\",\n  \"ticket_price\": 35.5\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/events/{{newEventId}}"
           }
@@ -359,11 +410,20 @@
           ],
           "request": {
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Ghost\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/events/999999"
           }
@@ -452,11 +512,20 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"event_id\": 3,\n  \"user_name\": \"Postman Tester\",\n  \"user_email\": \"{{testEmail}}\",\n  \"user_phone\": \"+86 139 0000 0000\",\n  \"num_tickets\": 2\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/registrations"
           }
@@ -479,11 +548,20 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"event_id\": 3,\n  \"user_name\": \"Postman Tester\",\n  \"user_email\": \"{{testEmail}}\",\n  \"num_tickets\": 1\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/registrations"
           }
@@ -503,11 +581,20 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"event_id\": 0,\n  \"user_name\": \"\",\n  \"user_email\": \"not-an-email\",\n  \"num_tickets\": 0\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/registrations"
           }
@@ -527,11 +614,20 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"event_id\": 999999,\n  \"user_name\": \"Ghost\",\n  \"user_email\": \"ghost@example.com\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/registrations"
           }

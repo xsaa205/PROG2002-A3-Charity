@@ -93,17 +93,21 @@ app.use('/api/organisations', organisationsRouter);
 // ----------------------------------------------------------------------------
 // Optional static hosting for the client-side and admin-side sites.
 // ----------------------------------------------------------------------------
-// When the whole project is deployed as a SINGLE cPanel Node.js app, set the
-// SERVE_STATIC_DIR environment variable to a folder that contains the built
-// client + admin files (e.g. the repo root). The app then serves those static
-// assets from "/" while the API keeps responding on "/api/*".
+// When the whole project is deployed as a SINGLE cPanel Node.js app, the app
+// serves static assets from a "public" folder next to this file (the cPanel
+// application root). This works WITHOUT any environment variable, which avoids
+// cPanel env-var delivery problems. An explicit SERVE_STATIC_DIR value is still
+// honoured when it points at an existing directory.
 //
-// This block is a no-op during local development: it only activates when
-// SERVE_STATIC_DIR is set AND the directory actually exists, so it can never
-// interfere with the existing API behaviour.
+// It is a no-op during local development (no "public" folder sits next to the
+// code), so it never interferes with the existing API behaviour.
 // ----------------------------------------------------------------------------
-const SERVE_STATIC_DIR = process.env.SERVE_STATIC_DIR;
-if (SERVE_STATIC_DIR && require('fs').existsSync(SERVE_STATIC_DIR)) {
+const SERVE_STATIC_DIR =
+  (process.env.SERVE_STATIC_DIR &&
+    require('fs').existsSync(process.env.SERVE_STATIC_DIR))
+    ? process.env.SERVE_STATIC_DIR
+    : require('path').join(__dirname, 'public');
+if (require('fs').existsSync(SERVE_STATIC_DIR)) {
   app.use(express.static(SERVE_STATIC_DIR, { extensions: ['html'] }));
 }
 
